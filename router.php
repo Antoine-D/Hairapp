@@ -172,4 +172,4 @@ if( $uri === 'home' ){
             //var_dump( $v);
 
         }
-    }
+}
