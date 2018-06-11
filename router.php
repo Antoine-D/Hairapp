@@ -27,6 +27,10 @@ $uri = substr(urldecode($_SERVER["REQUEST_URI"]), strlen(dirname($_SERVER["SCRIP
 
 $uri = ltrim($uri, "/"); // on retire le /
 
+if( empty( $uri ) ){
+	$uri = 'home/getHome';
+}
+
 if( $uri === 'admin'){
     $uri = 'admin/getAdmin';
 }

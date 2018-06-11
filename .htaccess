@@ -2,8 +2,11 @@ RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
+#RewriteCond %{HTTP_HOST} ^(www.)?hairapp.fr$
 RewriteRule ^(.*)$ router.php [L]
+
+RewriteCond %{HTTP_HOST} ^(www.)?hairapp.fr$
+RewriteRule ^(/)?$ router.php [L]
 
 #Rediretion vers page d'erreurs perso
 #ErrorDocument 400 /views/errors/400.view.php
