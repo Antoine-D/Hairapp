@@ -6,158 +6,88 @@
  * Time: 14:20
  */
 
-class Hairdresser extends BaseSql {
-    protected $id=null;
-    protected $firstname;
-    protected $lastname;
-    protected $profilPicture;
-    protected $email;
-    protected $pwd;
-    protected $token;
+class Hairdresser extends User  {
+            /*Recoit:
+         * La durée du forfait
+         * La journée concerné
+         * l'id du coiffeur (0 si tous les coiffeur)
+         */
 
-    /**
-     * Hairdresser constructor.
-     * @param null $id
-     */
+            /*
+             * Etape 1 :
+             * Appeler une fonction getPlage qui prend en paramètres : durée du forfait,idCoiffeur et la date et retourne un tableau associatif des heures avec la durée demandé sous la forme heure => minute:
+             * exemple : { "15h" => "45" }
+             * Mettre la priorité sur les écart se rapprochant le plus de la durée
+             * retourner un tableau des clés (heure)
+             */
     public function __construct()
     {
         parent::__construct();
+        parent::setStatus(2);
     }
 
+    public function getTimeRangeAvailable($appointments,$duration){
+        //Si resultat nul: renvoyer toutes les horaires pour le package
+        $appointmentHours = [];
+        $availableHours = [];
+        $package = new Package();
+        foreach ($appointments as $appointment){
+            $appointmentDuration = $package->getAllBy(['id' => $appointment->getIdPackage()],['duration'],3)[0]->getDuration();
+            $endAppointment = date('H:i:s',strtotime('+ '.$appointmentDuration.' minutes',strtotime($appointment->getHourAppointment())));
+            $appointmentHours[] = ['start' => $appointment->getHourAppointment(),'end' => $endAppointment];
+        }
 
-    /**
-     * @return mixed
-     */
-    public function getToken()
-    {
-        return $this->token;
+        //Creer un tableau des rendez-vous de la journée
+        $timesRange = $appointment->getAvailableTimeBetweenAppointment($appointmentHours);
+
+        //Pour chaque rendez-vous, récupere toutes les heures disponible entre les deux rendez-vous
+        foreach ($timesRange as $hour=>$availableTime){
+            if($availableTime > $duration){
+                for ($i=0;$i<=$availableTime;$i+=$duration){
+                    if($availableTime - $i > $duration) {
+                        $availableHours[] = date("H:i", strtotime('+' . $i . ' minutes', strtotime($hour)));
+                    }
+                }
+            }
+        }
+        return $availableHours;
     }
 
-    /**
-     * @param null $token
-     * @internal param mixed $token_
-     */
-    public function setToken($token = null){
-        if( $token ){
-            $this->token = $token;
-        }else if(!empty($this->email)){
-            $this->token = substr(sha1("GDQgfds4354".$this->email.substr(time(), 5).uniqid()."gdsfd"), 2, 10);
-        }else{
-            die("Veuillez préciser un email");
+    public function getHairdresserAvailableForSelectedHour($hour,$date,$duration){
+        $appointment = new Appointment();
+        $appointments = $appointment->getAllBy(['dateAppointment' => $date],null,3);
+        $hairdressersId = $this->getAllBy(['status' => '2'],['id'],3);
+        $associativeHairdresserAndAppointment = $appointment->getAssociativeHaidresserAppointmentPackage($appointments);
+        if($this->checkIfTheyAreFreeHairdresser($appointments,$hairdressersId)){
+            $freeHairdresser = [];
+            foreach ($hairdressersId as $id){
+                $availableHairdresser = array_key_exists($id->getId(),$associativeHairdresserAndAppointment) ? false : true;
+                if($availableHairdresser){
+                    $freeHairdresser[] = $id->getId();
+                }
+            }
+            return $freeHairdresser[array_rand($freeHairdresser)];
+        }
+        else{
+            foreach($associativeHairdresserAndAppointment as $idHairdresser =>$hairdresserAppointments){
+                foreach($this->getTimeRangeAvailable($hairdresserAppointments,$duration) as $timesRange){
+                    if($timesRange == $hour){
+                        return $idHairdresser;
+                    }
+                }
+            }
         }
     }
 
-    /**
-     * @return null
-     */
-    public function getId()
-    {
-        return $this->id;
+    public function checkIfTheyAreFreeHairdresser($appointments, $hairdressers){
+        $appointment = new Appointment();
+        $associativeHairdresserAndAppointment = $appointment->getAssociativeHaidresserAppointmentPackage($appointments);
+        foreach ($hairdressers as $id){
+            $availableHairdresser = array_key_exists($id->getId(),$associativeHairdresserAndAppointment) ? false : true;
+            if($availableHairdresser){
+                return true;
+            }
+        }
+        return false;
     }
-
-    /**
-     * @param null $id
-     */
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFirstname()
-    {
-        return $this->firstname;
-    }
-
-    /**
-     * @param mixed $firstname
-     */
-    public function setFirstname($firstname)
-    {
-        $this->firstname = ucfirst(strtolower(trim($firstname)));
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLastname()
-    {
-        return $this->lastname;
-    }
-
-    /**
-     * @param mixed $lastname
-     */
-    public function setLastname($lastname)
-    {
-        $this->lastname = strtoupper(trim($lastname));
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSpeciality()
-    {
-        return $this->speciality;
-    }
-
-    /**
-     * @param mixed $speciality
-     */
-    public function setSpeciality($speciality): void
-    {
-        $this->speciality = $speciality;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email)
-    {
-        $this->email = strtolower(trim($email));
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPwd()
-    {
-        return $this->pwd;
-    }
-
-    /**
-     * @param mixed $pwd
-     */
-    public function setPwd($pwd)
-    {
-        $this->pwd = password_hash($pwd, PASSWORD_DEFAULT);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getProfilPicture()
-    {
-        return $this->profilPicture;
-    }
-
-    /**
-     * @param mixed $profilPicture
-     */
-    public function setProfilPicture($profilPicture): void
-    {
-        $this->profilPicture = $profilPicture;
-    }
-
-
 }

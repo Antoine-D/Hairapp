@@ -6,10 +6,15 @@
  * Time: 14:22
  */
 ?>
-    <footer class="footer">
+<footer>
+    <div class="footer">
         ©Hair'App
-    </footer>
+        <script type="text/javascript" src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+        <script type="text/javascript" src="../public/js/index.js"></script>
+    </div>
+</footer>
 
+    <script src=" <?php echo DIRNAME; ?>public/js/index.js"></script>
 
     <script>
         function toggleAnimated(x) {

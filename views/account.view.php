@@ -75,13 +75,39 @@
         <div class="row">
             <div class="col-l-6 center">
 
-                <?php foreach ( $appointments as $appointment ):?>
+                <div class="col-l-6 center">
+                    <?php $i = 0; ?>
+                    <?php foreach ( $appointments as $appointment ):?>
+                        <ul>
+                        <?php if( $i < ( count( $appointments) / 2 ) ):?>
 
-                    <?php echo "Le " . $appointment->getDateAppointment() . " à " . $appointment->getHourAppointment() . " avec " . $appointment->getFirstname() ;?>
+                                <li><?php echo "Le " . $appointment->getDateAppointment() . " à " . $appointment->getHourAppointment() . " avec " . $appointment->getFirstname() ;?>
+                                </li>
 
-                <?php endforeach; ?>
+                         <?php $i++; endif; ?>
+                        </ul>
+                    <?php endforeach; ?>
+                </div>
+                <div class="col-l-6 center">
+
+                    <?php $i = 0 ; ?>
+                    <?php foreach ( $appointments as $appointment ):?>
+                        <ul>
+                            <?php if( $i < ( count( $appointments) / 2 ) ):?>
+
+                            <?php $i++; else: ?>
+                                <li>
+                                    <?php echo "Le " . $appointment->getDateAppointment() . " à " . $appointment->getHourAppointment() . " avec " . $appointment->getFirstname() ;?>
+                                </li>
+                            <?php $i++; endif; ?>
+                        </ul>
+                    <?php endforeach; ?>
+
+                </div>
+
+
             </div>
-    </div>
+        </div>
     </div>
 
 

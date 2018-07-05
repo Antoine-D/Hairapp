@@ -25,7 +25,7 @@ class BaseSql{
         }
         //$this->db = new Database();
 
-        $this->table = strtolower(get_called_class());
+        $this->table = strtolower(get_called_class()) == "hairdresser" ? "user" : strtolower(get_called_class());
     }
 
     public static function getInstance() {
@@ -72,7 +72,6 @@ class BaseSql{
         foreach($params as $key => $value) {
             $tmp1[] = ':'.$key;
             $tmp2[] = $key.'=:'.$key;
-            $tmp5[] = $key.'>:'.$key;
             $tmp4[] = $key.' <> :'.$key;
             if(!in_array($key, $params_remove)) {
                 $tmp3[] = $key.'=:'.$key;
@@ -90,9 +89,12 @@ class BaseSql{
             $result['max_to'] = " >= '" . $params['max_to']. "'";
         }
 
-
-        if( isset( $params['inner_table'] ) ){
-            $result['inner'] = " INNER JOIN ". $params['inner_table'] . " ON " . $params['inner_column'] . " = " . $params['inner_ref_to'];
+        if( isset( $params['inner_table']) && isset( $params['inner_table']) && isset($params['inner_column']) ){
+            $result['inner'] = '';
+            for ($i=0; $i < count($params['inner_table']) ; $i++) {
+                $result['inner'] .= " INNER JOIN ". $params['inner_table'][$i] . " ON " . $params['inner_column'][$i] . " = " . $params['inner_ref_to'][$i];
+                $result['inner'];
+            }
         }
 
 
@@ -102,8 +104,6 @@ class BaseSql{
         $result['bind_onduplicate'] = implode(',', $tmp3);
         $result['bind_primary_key'] = implode(' AND ', $tmp3);
         $result['not_in'] = implode(' AND ', $tmp4);
-        //$result['min_max'] = implode(' AND ', $tmp5);
-        //$result['min_max'] = str_replace( '<:max', '>:max')
         return $result;
     }
 
@@ -193,7 +193,6 @@ class BaseSql{
             $bind_pk = $this->bindParams($fields_primary_key);
             $found = $this->countTable($table, $fields_primary_key);
         }
-
         $bind = $this->bindParams($fields);
 
         if( isset( $fields_primary_key ) ){
@@ -202,7 +201,6 @@ class BaseSql{
         else{
             $sql_params = $fields;
         }
-
 
         if( $found == 0 ){
             $bind['fields'] = ltrim( $bind['fields'], ',' );
@@ -213,7 +211,7 @@ class BaseSql{
             $sql_upd = 'UPDATE '.$this->table.' SET '.$bind['bind_update'].' WHERE '.$bind_pk['bind_primary_key'];
 
         }
-        //var_dump( $sql_upd ); die;
+
         $this->update($sql_upd, $sql_params);
     }
 
@@ -290,7 +288,7 @@ class BaseSql{
         return $res;
     }
 
-    public function getAllBy($where = [], $columns = null, $tab = null){
+    public function getAllBy($where = [], $columns = null, $tab = null,$inner = null){
         // $where = ["diff_status"=>-1, "id"=>3 ]
          if(is_null($columns)){
              $select="*";
@@ -302,9 +300,9 @@ class BaseSql{
              $bind= $this->bindParams($where);
              $sql_params= $where;
 
-             if( isset( $where['inner_table']) ){
-                 $from = $this->table . $bind['inner'];
-                 //var_dump( $columns ); die;
+             if( isset( $inner['inner_table']) ){
+                 $bind_inner = $this->bindParams($inner);
+                 $from = $this->table . $bind_inner['inner'];
              }
              else{
                  $from = $this->table;
@@ -332,21 +330,27 @@ class BaseSql{
                  ' FROM '.$from.' WHERE '
                  .$where_type);
 
-
              $sql->execute($sql_params);
 
          }
          else{
+             if( isset( $inner['inner_table']) ){
+                 $bind = $this->bindParams($inner);
+                 $from = $this->table . $bind['inner'];
+             }
+             else{
+                 $from = $this->table;
+             }
              $sql = $this->db->prepare('SELECT ' .$select.
-                 ' FROM '.$this->table
+                 ' FROM '.$from
              );
              $sql->execute();
          }
 
             $result = $sql->fetchAll(PDO::FETCH_CLASS, ucfirst( $this->table ) );
             return $result;
-
         }
+
 
     /**
      * @param array $where
@@ -358,6 +362,7 @@ class BaseSql{
         //->fetchObject('User');
         $sql->execute( $where );
         $result = $sql->fetchObject('User');
+
 
         //return objet
         return $result;

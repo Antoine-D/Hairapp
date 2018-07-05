@@ -5,7 +5,6 @@ class Security{
     public static function isConnected(){
 
         if(!empty($_SESSION["token"]) && !empty($_SESSION["email"])){
-
             $user = new User();
             $user = $user->populate( ["email" => $_SESSION['email'] ] );
 
@@ -57,6 +56,17 @@ class Security{
         return false;
     }
 
+    public static function checkMailExist( $email ){
+        $user = new User();
+        $user = $user->getAllBy( ["email" =>$email ], null, 3 );
+
+        if( count( $user ) > 0 ){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
 
 }
