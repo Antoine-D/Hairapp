@@ -70,7 +70,6 @@ class SigninController{
                     "lastConnection" => null,
                     "picture" => null
                 );
-
                 $user->updateTable( $params );
                 require("vendor/autoload.php");
 
