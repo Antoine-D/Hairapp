@@ -7,6 +7,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="widgets" level="application" />
+    <orderEntry type="library" name="tinymce" level="application" />
+    <orderEntry type="library" name="jquery-3.2.1" level="application" />
     <orderEntry type="module-library">
       <library name="PHP" type="php">
         <CLASSES>
@@ -23,8 +26,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="widgets" level="application" />
-    <orderEntry type="library" name="tinymce" level="application" />
-    <orderEntry type="library" name="jquery-3.2.1" level="application" />
+    <orderEntry type="library" name="Chart" level="application" />
+    <orderEntry type="library" name="ckeditor" level="application" />
   </component>
 </module>

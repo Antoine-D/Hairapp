@@ -10,8 +10,8 @@ class Security{
             if( $user->getToken() == $_SESSION['token'] && $user->getEmail() == $_SESSION['email'] ){
                 return true;
             }
-            else{
-                return false;
+                else{
+                    return false;
             }
         }
         return false;
@@ -57,14 +57,51 @@ class Security{
 
     public static function checkMailExist( $email ){
         $user = new User();
-        $user = $user->getAllBy( ["email" =>$email ], null, 3 );
+        $users = $user->getAllBy( ["email" =>$email ], null, 3 );
 
-        if( count( $user ) > 0 ){
-            return false;
+        $exist = false;
+        
+        if( count( $users ) > 0 ){
+            foreach ($users as $user) {
+
+                if( $user->getStatus() != '-1' && $user->getEmail() == $email ){
+                    
+                    return false;
+                }
+            }
+            if( !$exist ){
+                return true;
+            }
+            
         }
         else{
             return true;
         }
+    }
+
+    public static function checkTelExist( $tel ){
+        $user = new User();
+        $users = $user->getAllBy( ["tel" =>$tel ], null, 3 );
+        $exist = false;
+
+        if( count( $users ) > 0 ){
+            foreach ($users as $user) {
+                if( $user->getStatus() != '-1' && $user->getTel() == $tel ){
+                    return false;
+                }
+            }
+            if( !$exist ){
+                return true;
+            }
+            
+        }
+        else{
+            return true;
+        }
+    }
+
+    public static function setHtmlEntitiesForData($data){
+        return htmlentities($data);
     }
 
 

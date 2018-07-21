@@ -5,8 +5,8 @@
     <div class="row">
         <h1 id="title-rdv" class="title col-l-10">Prendre rendez-vous</h1>
     </div>
-
-    <?php if (isset($data)):?>
+    <?php //var_dump( $data ); die; ?>
+    <?php if (!empty($data)):?>
         <?php foreach ($data as $d):?>
             <ul class="errors">
             <?php if(array_key_exists('errors',$data)): ?>
@@ -19,18 +19,17 @@
                 <?php endfor; ?>
 
             <?php else: ?>
-                <?php for ($i=0;$i<count($d);$i++):?>
+                <?php if(array_key_exists('success',$data) ):?>
                     <div class="div-errors success">
                         <p><?php echo $d;?></p>
                     </div>
-                <?php endfor; ?>
+                <?php endif; ?>
             <?php endif; ?>
             </ul>
         <?php endforeach;?>
     <?php endif; ?>
 
     <form method='post' action='saveAppointment'>
-
         <section id="choix-coiffeur" class="row">
             <h2 class="title-section-rdv">Designez votre coiffeur</h2>
             <div class="container liste-coiffeur">
@@ -47,6 +46,8 @@
                             <span class="nom-coiffeur"><?php echo $hairdresser->getFirstname();?></span>
                         </label>
                     </li>
+
+                    <style>input[type="checkbox"][id^="coiffeur<?php echo $hairdresser->getId(); ?>"] + label::before {background-image: url("<?php echo $hairdresser->getPicture(); ?>");}</style>
                 <?php endforeach; ?>
             </div>
         </section>
@@ -67,7 +68,7 @@
         </section>
 
         <section id="selection-date" class="row">
-            <h2 class="title-section-rdv">Selectionnez une date</h2>
+            <h2 class="title-section-rdv">Selectionnez une date et une horaire</h2>
             <div class="container date">
 
                 <select name="jour" id="jour" class="appointmentAttr liste_deroulante">
@@ -79,15 +80,15 @@
                 </select>
 
                 <select name="annee" id="annee" class="appointmentAttr liste_deroulante">
-                    <option selected>2018</option>
-                    <option value="2019">2019</option>
+                    <option selected><?php echo date("Y");?></option>
+                    <option value="2019"><?php echo date("Y") +1;?></option>
                 </select>
             </div>
 
             <ul id="appointmentHour" class="container checkbox-heure-rdv">
             </ul>
 
-            <select name="heure" id="heure" class="col-s-3 liste_deroulante">
+            <select name="selectHour" id="heure" class="col-s-3 liste_deroulante">
                 <option selected disabled>Heure</option>
             </select>
         </section>
@@ -96,8 +97,9 @@
 </main>
 </body>
 <script type="text/javascript" src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
-<script type="text/javascript" src="../public/js/appointment.js"></script>
+<script type="text/javascript" src="<?php echo DIRNAME . "public/js/appointment.js"; ?>"></script>
 </html>
+
 
 
 

@@ -17,7 +17,8 @@ class Validator
 
             if (isset($config["confirm"]) && $params[$name] !== $params[$config["confirm"]]) {
                 $errorsMsg[] = "Les deux mots de passe doivent être identiques";
-            } else if (!isset($config["confirm"] ) ) {
+            }
+            else if (!isset($config["confirm"] ) ) {
                 if ( $config["type"] == "email" ){
                     if(isset($config['disable'])) {
 
@@ -75,14 +76,14 @@ class Validator
         return $errorsMsg;
     }
 
-    public static function isUnique($form, $params)
+    public static function isUnique($form, $params, $userid)
     {
         $errorsMsg = [];
 
         foreach ($form["input"] as $name => $config) {
 
             if( $config["type"] == "email" ){
-                if( !self::isUniqueEmail( $params[$name] ) ){
+                if( !self::isUniqueEmail( $params[$name], $userid) ){
                     $errorsMsg[] = "Email deja existant";
                 }
             }
@@ -94,7 +95,7 @@ class Validator
             } 
 
             if( $config["type"] == "tel" ){
-                if( !self::isUniqueTel( $params[$name] ) ){
+                if( !self::isUniqueTel( $params[$name], $userid ) ){
                     $errorsMsg[] = "Telephone deja existant";
                 }
             } 
@@ -113,29 +114,31 @@ class Validator
         return false;
     }
 
-    public static function isUniqueEmail( $email ){
+    public static function isUniqueEmail( $email, $iduser ){
         $users = new User();
         $users = $users->getAllBy(["email" => $email], ["id, email, status"], 2);
         foreach ($users as $user) {
-        if ($user->getStatus() != '-1')
+        if ($user->getStatus() != '-1' && $user->getId() != $iduser )
             return false;
         }
         return true;
     }
 
-    public static function isUniqueTel( $tel ){
+    public static function isUniqueTel( $tel, $iduser ){
         $users = new User();
         $users = $users->getAllBy(["tel" => $tel], ["id, tel, status"], 2);
+
         foreach ($users as $user) {
-        if ( $user->getStatus() != '-1')
-            return false;
+            if ( $user->getStatus() != '-1' && $user->getId() != $iduser ){
+                return false;
+            }
         }
         return true;
     }
 
     public static function isUniqueCategory( $categorie ){
         $cat = new Category();
-        $cat = $cat->getAllBy(["description" => $categorie], ["id, description, status, id_CategoryType"], 2);
+        $cat = $cat->getAllBy(["description_category" => $categorie], ["id_category, description_category, status_category, id_CategoryType"], 2);
         foreach ($cat as $category) {
         if ( $category->getStatus() != '-1' && $category->getIdCategoryType()==1)
             return false;
@@ -225,6 +228,19 @@ class Validator
         }
     }
 
+    public static function checkAvailableCategoryOrderForPackageAdmin($displayOrder){
+        return ctype_digit($displayOrder)? true : $errors['errors'][] = 'L\'ordre de la catégorie doit être un nombre';;
+    }
+
+    public static function checkAvailableCategoryForPackageAdmin($category){
+        if ($category->checkIfCategoryDescriptionExists(1)) {
+            $errors['errors'][] = 'Cette catégorie est déja existante';
+        }
+        return isset($errors)?$errors:0;
+    }
+
+
+
     public static function checkAvailableAppointment(){
 
         $appointment = new Appointment();
@@ -239,7 +255,7 @@ class Validator
         if(!isset($_POST['package'])){
             $errors[] = 'Aucun forfait selectioné';
         }
-        if(!isset($_POST['cbHeure'])){
+        if(!isset($_POST['selectHour']) && !isset($_POST['cbHeure'])){
             $errors[] = 'Aucune horaires selectionée';
         }
         else{
@@ -248,21 +264,87 @@ class Validator
             $day = $_POST['jour']<10?'0'.$_POST['jour']:$_POST['jour'];
             $date = $_POST['annee'].$month.$day;
             if($now->format('Ymd') > $date){
-                $errors[] = ['La date est inférieure à la date du jour'];
+                $errors[] = 'La date est inférieure à la date du jour';
             }
         }
 
         if(empty($errors)){
-            if ($appointment->countTable('Appointment', ['dateAppointment' => $date, 'hourAppointment' => $_POST['cbHeure'], 'id_Hairdresser' => $_POST['hairdresser']]) > 0) {
+            if ($appointment->countTable('Appointment', ['dateAppointment' => $date, 'hourAppointment' => isset($_POST['cbHeure'])?$_POST['cbHeure']:$_POST['selectHour'], 'id_Hairdresser' => $_POST['hairdresser'],'planned' => 1]) > 0) {
                 $errors[] = 'Ce creneau horaire n\'est pas disponible';
             }
 
-            if ($appointment->countTable('Appointment', ['dateAppointment' => $date, 'hourAppointment' => $_POST['cbHeure'], 'id_User' => $_SESSION['id']]) > 0) {
+            if ($appointment->countTable('Appointment', ['dateAppointment' => $date, 'hourAppointment' =>isset($_POST['cbHeure'])?$_POST['cbHeure']:$_POST['selectHour'], 'id_User' => $_SESSION['id'],'planned' => 1]) > 0) {
                 $errors[] = 'Vous avez déja un rendez-vous pour cette date et ce créneau horaire';
             }
 
         }
 
         return empty($errors)? [] : $errors;
+    }
+
+    public static function validateInstall( $form, $params ){
+
+        $errorsMsg = [];
+
+        foreach ( $form["div"] as $groups => $config ){
+
+            foreach ( $config['input'] as $nameIpt => $paramsIpt ){
+                if (isset($paramsIpt["confirm"]) && $params[$nameIpt] !== $params[$paramsIpt["confirm"]]) {
+                    $errorsMsg[] = "Les deux mots de passe doivent être identiques";
+                }
+                else if (!isset($paramsIpt["confirm"] ) ) {
+
+                    if ( $paramsIpt["type"] == "email" ){
+                        if(isset($paramsIpt['disable'])) {
+
+                            if( $paramsIpt['disable'] != true ){
+                                if( !self::checkEmail($params[$nameIpt] ) ){
+                                    $errorsMsg[] = "L'email n'est pas valide";
+                                }
+                            }
+                        }
+                        else{
+                            if( !self::checkEmail($params[$nameIpt] ) ){
+                                $errorsMsg[] = "L'email n'est pas valide";
+                            }
+                        }
+
+                    } else if ($paramsIpt["type"] == "password" && !self::checkPwd($params[$nameIpt])) {
+                        $errorsMsg[] = "Le mot de passe est incorrect (6 à 12, min, maj, chiffres)";
+                    }
+
+                }
+
+                if( $paramsIpt["type"] == "tel" ){
+                    if( !self::checkTel( $params[$nameIpt] ) ){
+                        $errorsMsg[] = "Numero de téléphone non conforme";
+                    }
+                }
+
+
+                if (isset($paramsIpt["required"]) && !self::minLength($params[$nameIpt], 1)) {
+                    $errorsMsg[] = $name . " doit faire plus de 1 caractère";
+                }
+
+                if (isset($paramsIpt["minString"]) && !self::minLength($params[$nameIpt], $paramsIpt["minString"])) {
+                    $errorsMsg[] = $nameIpt . " doit faire plus de " . $paramsIpt["minString"] . " caractères";
+                }
+
+                if (isset($paramsIpt["maxString"]) && !self::maxLength($params[$nameIpt], $paramsIpt["maxString"])) {
+                    $errorsMsg[] = $nameIpt . " doit faire moins de " . $paramsIpt["maxString"] . " caractères";
+                }
+
+                if( isset( $params['picture'] ) ){
+                    if( $paramsIpt['type'] == "file" && !self::VerifImgExt() ){
+                        $errorsMsg[] = $nameIpt . " doit avoir une extension en .PNG . JPG  .GIF ou .JPEG ";
+                    }
+                    if( $paramsIpt['type'] == "file" && !self::VerifImgSize( $params[$nameIpt] ) ){
+                        $errorsMsg[] = $nameIpt . " La taille du fichier est supérieure à 1MO";
+                    }
+                }
+            }
+        }
+
+        return $errorsMsg;
     }
 }

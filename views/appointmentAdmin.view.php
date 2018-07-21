@@ -11,57 +11,56 @@ include "templates/sidebar.view.php";
 
 <div class="content">
     <article class="arriere_plan">
-        <select name="appointmentFieldsSearch" id="appointmentFieldsSearch" class="col-l-2 col-s-12 liste_deroulante">
-            <option value="date">Date</option>
-            <option value="hour">Heure</option>
-            <option value="user">Client</option>
-            <option value="hairdresser">Coiffeur</option>
-            <option value="package">Forfaits</option>
-        </select>
-
-        <input id="searchAppointment" name="searchAppointment" class="input col-l-2">
-
+        <h1 class="packageAdmin-title">Gestion des rendez-vous</h1>
+        <div class="row">
+            <a id='add' href="<?php echo DIRNAME . "admin/updateAppointment"; ?>" class='buttonUserAdd' style="margin-bottom: 0px;">Ajouter un rendez-vous</a>
+        </div>
+        <input id="search" class="input col-l-2" placeholder="Recherchez...">
+        <a id='getPastAppointment' href="<?php echo DIRNAME . "admin/getAppointmentAdmin/".$filter == 'past'? 'futur':'past'?>" class='buttonUserModify buttonSecondary row'>Afficher les rendez-vous <?php echo $filter == 'past'? 'à venir':'passé(s)'?></a>
         <div class="col-s-12 col-m-8 col-l-12 form_register_admin">
-
             <div class="col-l-4">
                 <h2 class="center title">Gestion des rendez-vous</h2>
             </div>
         </div>
-
         <div class="col-s-12 col-l-12 col-m-9 tab-admin">
+            <?php if(empty($appointments)):?>
+                <ul class="errors">
+                    <li>
+                        <div class="div-errors information">
+                            <p><strong>Aucun rendez-vous</strong>
+                                <br><br>Vous pouvez ajouter de nouveaux rendez-vous ou attendre que de nouveaux rendez-vous soient enregistrés</p>
+                        </div>
+                    </li>
+                </ul>
+            <?php endif; ?>
             <table class="userManagerTab col-l-12">
                 <tr>
-                    <th id="date"><a href="">Date</a></th>
+                    <th id="date">Date</th>
                     <th id="hour">Heure</th>
                     <th id="user">Client</th>
                     <th id="hairdresser">Coiffeur</th>
                     <th id="package">Forfaits</th>
                 </tr>
-
-                <?php foreach ( $appointments as $appointment ): ?>
+                <tbody id="searchList">
+                <?php foreach ($appointments as $appointment): ?>
                     <tr>
-                                
-                        <td><?php echo $appointment->getFormatedDateAppointment(); ?></td>
-                        <td><?php echo $appointment->getHourAppointment(); ?> </td>
-                        <td><?php echo $appointment->getIdUser(); ?></td>
-                        <td><?php echo $appointment->getIdHairdresser(); ?></td>
-                        <td><?php echo $appointment->getIdPackage(); ?></td>
-                        <td><a id='modify' href='#' class='buttonUserModify'>Modifier</a></td>
-                        <td><a id='delete' href='#' class='buttonUserDelete'>Supprimer</a></td>
+                        <td><?php echo Security::setHtmlEntitiesForData($appointment->getFormatedDateAppointment()); ?></td>
+                        <td><?php echo Security::setHtmlEntitiesForData($appointment->getHourAppointment()); ?> </td>
+                        <td><?php echo Security::setHtmlEntitiesForData($appointment->getIdUser()); ?></td>
+                        <td><?php echo Security::setHtmlEntitiesForData($appointment->getIdHairdresser()); ?></td>
+                        <td><?php echo Security::setHtmlEntitiesForData($appointment->getIdPackage()); ?></td>
+                        <td><a id='modify' href="<?php echo DIRNAME . "admin/updateAppointment/".$appointment->getId() ?>" class='buttonUserModify'>Modifier</a></td>
+                        <td><a id='delete' href="<?php echo DIRNAME . "admin/deleteAppointment/".$appointment->getId() ?>" class='buttonUserDelete'>Supprimer</a></td>
                     </tr>
                 <?php endforeach; ?>
-
-                <nav aria-label="navigation">
-                    <tr class="page">
-                        <td class="previous"><a href="#" title="Précédent">Précédent</a></td>
-                        <td class="page center" colspan="5">1/104</td>
-                        <td class="next-admin"><a href="#" title="Suivant">Suivant</a></td>
-                    </tr>
-                </nav>
+                </tbody>
             </table>
         </div>
-    </article>
-</div>
 
+    </article>
+
+</div>
 </main>
+
+<script type="text/javascript" src="<?php echo DIRNAME."public/js/searchBar.js" ;?>"></script>
 

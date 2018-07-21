@@ -13,40 +13,32 @@
 
                             <?php $this->addModal("form", $config ); ?>
 
-
+                           <?php if( isset( $errors ) ): ?>
                             <ul class="errors">
-                                <?php if( isset( $errors ) ): ?>
-                                    <?php foreach ( $errors as $error ): ?>
-                                        <li>
-                                            <div class="div-errors danger">
-                                                <p><strong> Warning ! </strong><?php echo $error;?></p>
-                                            </div>
 
-                                        </li>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                                <?php foreach ( $errors as $error ): ?>
+                                    <li>
+                                        <div class="div-errors danger">
+                                            <p><strong> Warning ! </strong><?php echo $error;?></p>
+                                        </div>
+
+                                    </li>
+                                <?php endforeach; ?>
+
                             </ul>
-                            <ul class="errors col-l-12">
-                                  <?php if( isset( $success ) ): ?>
-                                           <li>
-                                                <div class="div-errors success col-l-12">
-                                                    <p><strong> Success ! </strong><?php echo $success;?></p>
-                                                </div>
+                            <?php endif; ?>
 
-                                            </li>
-                                    <?php endif; ?>
-                                </ul>
-
-                            <ul class="errors">
-                                <?php if( isset( $success ) ): ?>
+                            <?php if( isset( $success ) ): ?>
+                                <ul class="errors">
                                     <li>
                                         <div class="div-errors success">
                                             <p><strong> Success ! </strong><?php echo $success;?></p>
                                         </div>
 
                                     </li>
-                                <?php endif; ?>
-                            </ul>
+                                </ul>
+                            <?php endif; ?>
+
 
                         </div>
                     </div>

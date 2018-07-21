@@ -15,6 +15,7 @@ class Article extends BaseSql {
     protected $image;
     protected $status;
     protected $id_Category;
+    private $description_category;
 
     public function __construct()
     {
@@ -98,6 +99,16 @@ class Article extends BaseSql {
         return $this->image;
     }
 
+    public function getDescription_category()
+    {
+        return $this->description_category;
+    }
+
+    public function setDescription_category( $category)
+    {
+        $this->description_category = $category ;
+    }
+
     /**
      * @param mixed $minidescription
      */
@@ -162,7 +173,8 @@ class Article extends BaseSql {
                     "type"=>"file",
                     "class"=>"input input_sign-in",
                     'id' => 'picture',
-                    "placeholder"=>"Votre image"
+                    "placeholder"=>"Votre image",
+                    
                 ]
 
             ],
@@ -170,10 +182,9 @@ class Article extends BaseSql {
             "textarea" =>[
                 "description" =>[
                     "placeholder" => 'description',
-                    "class"=>"input input_sign-in",
+                    "class"=>"input input_sign-in ckeditor",
                     "rows" => "4",
                     "cols" => "40",
-                    "maxString" => 2000,
                     "required"=>true
                 ]
             ],
@@ -190,7 +201,7 @@ class Article extends BaseSql {
     public function formUpdateArticle(){
 
         return [
-            "config"=>["method"=>"POST", "action"=>"modifyAdminArticle", "submit"=>"Enregistrer"],
+            "config"=>["method"=>"POST", "action"=>"admin/modifyAdminArticle", "submit"=>"Enregistrer"],
             "input"=>[
 
                 "id"=>[
@@ -205,7 +216,7 @@ class Article extends BaseSql {
                     "type"=>"text",
                     "class"=>"input input_sign-in",
                     "placeholder"=>"Titre de l'article",
-                    "required"=>true
+                    
 
 
                 ],
@@ -219,7 +230,9 @@ class Article extends BaseSql {
                 "picture"=>[
                     "type"=>"file",
                     "class"=>"input input_sign-in",
-                    "placeholder"=>"Votre image"
+                    "placeholder"=>"Votre image",
+                    
+
                 ]
 
 
@@ -229,11 +242,13 @@ class Article extends BaseSql {
                 "description" =>[
                     "type"=>"textarea",
                     "placeholder" => 'description',
-                    "class"=>"input input_sign-in",
+                    "class"=>"input input_sign-in ckeditor",
                     "rows" => "4",
                     "cols" => "40",
-                    "maxString" => 2000,
-                    "required"=>true
+
+
+                    
+                    
                 ]
             ],
 

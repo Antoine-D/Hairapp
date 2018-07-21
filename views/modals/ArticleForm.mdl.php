@@ -29,12 +29,12 @@
                     name="<?php echo $name;?>"
                     class="<?php echo $params['class']; ?>"
                     placeholder="<?php echo $params["placeholder"];?>"
-            >
+
             <?php if( isset( $_POST[$name] ) ): ?>
             	<?php echo "value=".$_POST[$name]; ?>
             <?php endif; ?>
             <?php echo (isset($params["required"]))?"required='required'":"";?>
-
+>
         <?php endif;?>
 
     <?php endforeach;?>
@@ -54,6 +54,7 @@
            </textarea>
            
     <?php endforeach;?>
+     &nbsp
 
     <?php foreach ($config["select"] as $name => $params):?>
     		<select

@@ -8,6 +8,7 @@ $large: 1024px ;
 $main_color: #637484;
 $border_color: #333333;
 $button_color: #009CDF;
+$textHome: #ffffff;
 
 
 @mixin clearfix {
@@ -70,7 +71,7 @@ $button_color: #009CDF;
     margin-right: auto;
     margin-left: auto;
     text-align: center;
-    margin-top: 20px;
+
   }
   .sidebar_buttons{
     text-align: center;
@@ -100,7 +101,7 @@ $button_color: #009CDF;
     border-radius:5px;
   }
 
-  .sidenav a{
+  .sidenav ul a{
     color: #FFF;
     display: inline-block;
     font-weight: 400;
@@ -127,7 +128,7 @@ $button_color: #009CDF;
   .header .logo {
     float: left;
     line-height: 1.9;
-    padding: 10px 0px;
+    max-height: 60px;
   }
   .header .logo a {
     color: #FFF;
@@ -153,7 +154,7 @@ $button_color: #009CDF;
 
   .nav-left {
     float: left;
-    margin-left: 100px;
+    //margin-left: 100px;
     padding: 0;
   }
 
@@ -197,7 +198,7 @@ $button_color: #009CDF;
     display: block !important;
   }
   .active{
-    background-color:#009CDF;
+    background-color:$button_color;
     border-radius:5px;
   }
 
@@ -262,7 +263,7 @@ $button_color: #009CDF;
       bottom: 0;
       position: relative;
       display: table-cell;
-      margin-top: 15px;
+      //margin-top: 15px;
       text-align: center;
     }
 
@@ -281,15 +282,51 @@ $button_color: #009CDF;
     bottom: 0;
     clear: left;
     left: 0;
-    padding: 1rem;
-    background-color: #637484;
+    padding: 0.5rem;
+    background-color: $main_color;
     color:white;
-    text-align: center;
+    text-align: right;
+  }
 
+  .social > .fa {
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    width: 50px;
+    margin-left: 15px;
+  }
+
+  .social > .fa:hover {
+    opacity: 0.7;
+  }
+
+  .fa-facebook {
+    background: #3B5998;
+    color: white;
+  }
+
+  .fa-instagram {
+    background: #125688;
+    color: white;
+  }
+
+  .fa-pinterest {
+    background: #cb2027;
+    color: white;
+  }
+
+  .fa-twitter {
+    background: #55ACEE;
+    color: white;
   }
 }
 
-
+#titre-article{
+  margin:0;
+  width:100%;
+  text-align:center;
+}
 
 
 
@@ -312,7 +349,7 @@ $button_color: #009CDF;
   }
 
   .planning{
-    border-right: 2px solid #009CDF;
+    border-right: 2px solid $button_color;
   }
 
   #planning th{
@@ -324,7 +361,7 @@ $button_color: #009CDF;
   }
 
   .hairdresser2{
-    background-color: #2D9CDB;
+    background-color: $button_color;
   }
 
   .hairdresser3{
@@ -350,14 +387,13 @@ $button_color: #009CDF;
 
 @mixin rendezvous {
   /* RENDEZ VOUS*/
-  $imgCoiffeur1 : "../img/hommecoiffure.jpg";
 
-  
   #body-rdv {
     //background-color: #FFFFFF;
     background-image: url("../img/salon coiffure.jpeg");
-    //object-fit: cover;
-    //background-repeat: no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
   #main-rdv {
@@ -391,11 +427,11 @@ $button_color: #009CDF;
   input[type="checkbox"][id^="coiffeur"] + label::before {
     content: "";
     display: inline-block;
-    width: 80px;  
+    width: 80px;
     height: 80px;
-    background-image: url($imgCoiffeur1);
     background-size: cover;
     border-radius: 12px;
+    opacity: 0.5;
   }
 
   #coiffeurTous + label::before {
@@ -410,10 +446,6 @@ $button_color: #009CDF;
     font-size:20px;
   }
 
-
-  input[type="checkbox"][id^="coiffeur"] + label::before {
-    opacity: 0.5;
-  }
 
   input[type="checkbox"][id^="coiffeur"]:checked + label::before {
     border: solid black 2px;
@@ -483,8 +515,8 @@ $button_color: #009CDF;
 
   #choix-forfait a{
     margin-top:10px;
-    text-decoration:none; 
-  } 
+    text-decoration:none;
+  }
 
   #choix-coiffeur,#choix-forfait  {
     margin-top: 35px;
@@ -504,16 +536,16 @@ $button_color: #009CDF;
 
 }
 @mixin article {
-  
+
   $imgArt1 : "../img/journal.jpeg";
 
-  
+
   #body-art {
     //background-color: #FFFFFF;
     background-image: url("../img/salon coiffure.jpeg");
-    height: 0;
-    //object-fit: cover;
-    //background-repeat: no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
   #main-art {
@@ -538,47 +570,6 @@ $button_color: #009CDF;
     padding: 0;
     margin: 0 0 15px 0;
     width:100%;
-  }
-
-  input[type="checkbox"][id^="art"] {
-    display: none;
-  }
-
-  input[type="checkbox"][id^="art"] + label::before {
-    content: "";
-    display: inline-block;
-    width: 80px;  
-    height: 80px;
-    background-image: url($imgArt1);
-    background-size: cover;
-    border-radius: 12px;
-  }
-
-  #artTous + label::before {
-    background-image:linear-gradient(to top, #696969, rgba(219, 219, 219, 0));
-  }
-
-  label[for="artTous"]{
-    white-space: nowrap; /* interdiction de passer à la ligne */
-  }
-
-  label[for="artTous"] span{
-    font-size:20px;
-  }
-
-
-  input[type="checkbox"][id^="art"] + label::before {
-    opacity: 0.5;
-  }
-
-  input[type="checkbox"][id^="art"]:checked + label::before {
-    border: solid black 2px;
-    font-size: 10px;
-    opacity: 1;
-  }
-
-  label[for^="art"] {
-    position: relative;
   }
 
   section {
@@ -617,14 +608,12 @@ $button_color: #009CDF;
     border-radius: 0 0 12px 12px;
   }
 
-  #choix-art li, #selection-date li {
-    margin: 0 8px 5px 8px;
-  }
+  
 
    .liste-art li {
     display: inline-block;
   }
-  
+
   #choix-art  {
     margin-top: 35px;
   }
@@ -635,7 +624,7 @@ $button_color: #009CDF;
 @mixin genericClass{
   .updateButton
   {
-    background-color: #009cdf;
+    background-color: $button_color;
     border-radius: 30px;
     color: white;
     text-align: center;
@@ -659,7 +648,7 @@ $button_color: #009CDF;
 }
 
 
-@mixin responsive-rdv{ 
+@mixin responsive-rdv{
   @media only screen and (min-width: 1024px) {
     #title-rdv {
     //font-size: 28px;
@@ -685,25 +674,25 @@ $button_color: #009CDF;
     #heure {
     display: none;
     }
-    
+
     .container.checkbox-heure-rdv {
     display: block;
-    width:40%;
+    width:48%;
     }
 
     input[type="checkbox"][id^="coiffeur"] + label::before {
     width: 120px;
     height: 120px;
     }
-    
+
     .nom-coiffeur {
     font-weight: bold;
     }
-    
+
     .liste-heure-rdv{
       display:none;
     }
-    
+
     input[type="checkbox"][id^="heure"] {
       display: none;
     }
@@ -713,7 +702,7 @@ $button_color: #009CDF;
       display: inline-block;
       width: 70px;
       height: 35px;
-      background-color: #009CDF;
+      background-color: $button_color;
       border-radius: 16px;
       opacity: 0.5;
 
@@ -723,11 +712,11 @@ $button_color: #009CDF;
       font-size: 10px;
       opacity: 1;
     }
-    
+
     label[for^="heure"] {
       position: relative;
     }
-    
+
     .heure{
       position: absolute;
       left: -5%;
@@ -736,11 +725,11 @@ $button_color: #009CDF;
       width:100%;
       font-weight: bold;
     }
-    
+
     .container.date {
     width: 52%;
     }
-  } 
+  }
 }
 
 @mixin forfaits{
@@ -926,7 +915,7 @@ $button_color: #009CDF;
 
 
   #valider{
-    background-color:#2F80ED;
+    background-color:$button_color;
     color:white;
     margin-top: 30px;
     font-size: 16px;
@@ -973,7 +962,7 @@ $button_color: #009CDF;
   }
 
   .btnCreatePackage {
-    background-color: #009CDF;
+    background-color: $button_color;
     color: white;
     height: 45px;
     width: 100%; }
@@ -1001,7 +990,7 @@ $button_color: #009CDF;
 
   [class^="createPackage"] {
     border-radius:5px;
-    background-color: #009CDF;
+    background-color: $button_color;
     text-decoration:none;
     color: white;
     width: 100%;
@@ -1068,7 +1057,7 @@ $button_color: #009CDF;
     text-decoration: none;
     width: 100%;
     text-align: center;
-    background-color: #009CDF;
+    background-color: $button_color;
     color: #fff;
     padding: 5px 0;
     font-size: 20px;
@@ -1127,11 +1116,11 @@ $button_color: #009CDF;
   }
 
   input:checked + .slider {
-    background-color: #009cdf;
+    background-color: $button_color;
   }
 
   input:focus + .slider {
-    box-shadow: 0 0 1px #009cdf;
+    box-shadow: 0 0 1px $button_color;
   }
 
   input:checked + .slider:before {
@@ -1144,7 +1133,7 @@ $button_color: #009CDF;
   @media only screen and (min-width: 1024px) {
     [class^="createPackage"] {
       padding: 5px 150px;
-      background-color: #009CDF;
+      background-color: $button_color;
       color: white;}
 
     .createCategoryPackage {
@@ -1182,7 +1171,6 @@ $button_color: #009CDF;
   }
 }
 
-
 @mixin title{
   font-family: "Roboto";
   font-style: italic;
@@ -1192,5 +1180,137 @@ $button_color: #009CDF;
   margin-bottom: 25px;
   color: #000000;
   text-align:center;
+}
+
+@mixin install{
+  #configForm {
+    background-color: #ffffff;
+    margin: 0 auto;
+    padding: 40px;
+    width: 70%;
+    min-width: 300px;
+  }
+
+  //input {
+  //  padding: 10px;
+  //  width: 100%;
+  //  border: 1px solid #aaaaaa;
+  //}
+
+  /* Mark input boxes that gets an error on validation: */
+  input.invalid {
+    background-color: #ffdddd;
+  }
+
+  /* Hide all steps by default: */
+  .tab {
+    display: none;
+  }
+
+  button {
+    background-color: $button_color;
+    border-radius: 5px;
+    color: #ffffff;
+    border: none;
+    font-family: "Roboto";
+    font-size: 16px;
+    padding: 10px 25px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  #prevBtn {
+    background-color: #bbbbbb;
+  }
+
+  /* Make circles that indicate the steps of the form: */
+  .step {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbbbbb;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.5;
+  }
+
+  .step.active {
+    opacity: 1;
+  }
+
+  /* Mark the steps that are finished and valid: */
+  .step.finish {
+    background-color: $button_color;
+  }
+
+
+  .content-on-image {
+
+    background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+    color: #f1f1f1; /* Grey text */
+    width: 100%; /* Full width */
+    padding: 50px; /* Some padding */
+  }
+}
+
+@mixin dashboard{
+  .stat{
+    height: 50%;
+  }
+
+  .statValue
+  {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .statCard{
+    padding: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    text-align: center;
+    background-color: #f2f2f2;
+    height: 95px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    text-align: center;
+    background-color: #f2f2f2;
+    height: 475px;
+    margin-top: 35px;
+    margin-bottom: 50px;
+  }
+
+  .card:last-child{
+
+  }
+
+  .card:hover,.statCard:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+
+  .titleCard{
+    margin-bottom: 0px;
+  }
+
+  @media only screen and (min-width: 1024px) {
+    .line,.pie{
+      margin-left: 17%;
+    }
+
+
+    .card {
+      margin: 20px;
+      margin-top: 37px;
+      margin-bottom: 75px;
+    }
+  }
 }
 

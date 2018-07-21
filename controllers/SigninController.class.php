@@ -37,6 +37,10 @@ class SigninController{
             if( !Security::checkMailExist( $_POST['email'] ) ){
                 $errors[] = "Cet email est déjà utilisé.";
             }
+
+            if( !Security::checkTelExist( $_POST['tel'] ) ){
+                $errors[] = "Ce numéro est déjà utilisé.";
+            }
             //var_dump( $errors ); die;
             if( empty( $errors ) ){
                 $user->setFirstname($_POST['prenom']);
@@ -108,7 +112,6 @@ Ceci est un mail automatique, Merci de ne pas y répondre.';
                 $v->assign( "current", "login" );
                 $v->assign("config",$form);
                 $v->assign("success","Un mail de validation vous a été envoyé afin de finaliser votre inscription.");
-
             }
             else{
                 $v = new Views( "signin", "header" );

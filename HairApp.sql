@@ -11,14 +11,17 @@ USE HairApp;
 #------------------------------------------------------------
 
 CREATE TABLE appointment(
-        id              int (11) Auto_increment  NOT NULL ,
+
+        idAppointment   int (11) Auto_increment  NOT NULL ,
         dateAppointment Date NOT NULL ,
         hourAppointment Time NOT NULL ,
         id_user         Int ,
         id_Hairdresser  Int ,
         id_Package      Int ,
-        status          TINYINT(1) DEFAULT 1,
-        PRIMARY KEY (id)
+        planned          TINYINT(1) DEFAULT 1,
+        took            Date NOT NULL,
+        PRIMARY KEY (idAppointment)
+
 )ENGINE=InnoDB;
 
 
@@ -42,12 +45,13 @@ CREATE TABLE product(
 #------------------------------------------------------------
 
 CREATE TABLE category(
-        id              int (11) Auto_increment  NOT NULL ,
-        description     Varchar (250) NOT NULL ,
+        id_category              int (11) Auto_increment  NOT NULL ,
+        description_category     Varchar (250) NOT NULL ,
         id_user         Int ,
         id_CategoryType Int ,
-        status          TINYINT(1) DEFAULT 1,
-        PRIMARY KEY (id )
+        status_category          TINYINT(1) DEFAULT 1,
+        displayOrder    INT(4) NULL DEFAULT NULL,
+        PRIMARY KEY (id_category )
 )ENGINE=InnoDB;
 
 
@@ -62,7 +66,7 @@ CREATE TABLE user(
         email            Varchar (150) NOT NULL ,
         pwd              Varchar (60) NOT NULL ,
         token            Varchar (25) NOT NULL ,
-        tel              Varchar (25) NOT NULL ,
+        tel              Varchar (25) DEFAULT NULL ,
         changetopwd      Boolean NOT NULL ,
         receivePromOffer TINYINT(1) NOT NULL,
         status           TINYINT(1) NOT NULL,
@@ -81,7 +85,7 @@ CREATE TABLE user(
 CREATE TABLE color(
         id      int (11) Auto_increment  NOT NULL ,
         name    Varchar (50) NOT NULL ,
-        code    Integer NOT NULL ,
+        code    Varchar (7) NOT NULL ,
         id_user Int ,
         PRIMARY KEY (id )
 )ENGINE=InnoDB;
@@ -93,7 +97,7 @@ CREATE TABLE color(
 
 CREATE TABLE comment(
         id         int (11) Auto_increment  NOT NULL ,
-        content    Varchar (250) NOT NULL ,
+        content    Varchar (255) NOT NULL ,
         id_user    Int ,
         id_Article Int ,
         statut Int (11) NULL DEFAULT '1' COMMENT '1:en attente 0:refuse 2:accepté' ,
@@ -145,20 +149,21 @@ CREATE TABLE article(
         PRIMARY KEY (id )
 )ENGINE=InnoDB;
 
-
 #------------------------------------------------------------
 # Table: Package
 #------------------------------------------------------------
 
 CREATE TABLE package(
+
         id          int (11) Auto_increment  NOT NULL ,
         description Varchar (250) NOT NULL ,
         price       Float NOT NULL ,
         duration	int (5) DEFAULT 0,
         id_User     Int ,
         id_Category Int ,
-        status          TINYINT(1) DEFAULT 1,
+        status      TINYINT(1) NOT NULL DEFAULT 1,
         PRIMARY KEY (id )
+
 )ENGINE=InnoDB;
 
 #------------------------------------------------------------
@@ -178,13 +183,17 @@ CREATE TABLE theme(
 #------------------------------------------------------------
 
 CREATE TABLE configuration(
-        id       int (11) Auto_increment  NOT NULL ,
-        admin    Varchar (50) NOT NULL ,
-        logo     Varchar (100) NOT NULL ,
-        image    Varchar (100) NOT NULL ,
-        id_User  Int ,
-        id_Color Int ,
-        PRIMARY KEY (id )
+        id_config int(11) NOT NULL AUTO_INCREMENT,
+        logo varchar(100) NOT NULL,
+        email_address varchar(150) DEFAULT NULL,
+        email_pwd varchar(60) DEFAULT NULL,
+        postal_address varchar(255) DEFAULT NULL,
+        status_configuration int(1) NOT NULL DEFAULT '1',
+        facebook_link VARCHAR(150) DEFAULT NULL,
+        twitter_link VARCHAR(150) DEFAULT NULL,
+        instagram_link VARCHAR(150) DEFAULT NULL,
+        pinterest_link VARCHAR(150) DEFAULT NULL,
+        PRIMARY KEY (id_config)
 )ENGINE=InnoDB;
 
 
@@ -192,18 +201,18 @@ ALTER TABLE appointment ADD CONSTRAINT FK_Appointment_id_user FOREIGN KEY (id_us
 ALTER TABLE appointment ADD CONSTRAINT FK_Appointment_id_Hairdresser FOREIGN KEY (id_Hairdresser) REFERENCES user(id);
 ALTER TABLE appointment ADD CONSTRAINT FK_Appointment_id_Package FOREIGN KEY (id_Package) REFERENCES package(id);
 ALTER TABLE product ADD CONSTRAINT FK_Product_id_user FOREIGN KEY (id_user) REFERENCES user(id);
-ALTER TABLE product ADD CONSTRAINT FK_Product_id_Category FOREIGN KEY (id_Category) REFERENCES category(id);
+ALTER TABLE product ADD CONSTRAINT FK_Product_id_Category FOREIGN KEY (id_Category) REFERENCES category(id_category);
 ALTER TABLE category ADD CONSTRAINT FK_Category_id_user FOREIGN KEY (id_user) REFERENCES user(id);
 ALTER TABLE category ADD CONSTRAINT FK_Category_id_CategoryType FOREIGN KEY (id_CategoryType) REFERENCES categoryType(id);
 ALTER TABLE color ADD CONSTRAINT FK_Color_id_user FOREIGN KEY (id_user) REFERENCES user(id);
 ALTER TABLE comment ADD CONSTRAINT FK_Comment_id_user FOREIGN KEY (id_user) REFERENCES user(id);
 ALTER TABLE comment ADD CONSTRAINT FK_Comment_id_Article FOREIGN KEY (id_Article) REFERENCES article(id);
-ALTER TABLE article ADD CONSTRAINT FK_Article_id_Category FOREIGN KEY (id_Category) REFERENCES category(id);
+ALTER TABLE article ADD CONSTRAINT FK_Article_id_Category FOREIGN KEY (id_Category) REFERENCES category(id_category);
 ALTER TABLE package ADD CONSTRAINT FK_Package_id_user FOREIGN KEY (id_user) REFERENCES user(id);
-ALTER TABLE package ADD CONSTRAINT FK_Package_id_Category FOREIGN KEY (id_Category) REFERENCES category(id);
+ALTER TABLE package ADD CONSTRAINT FK_Package_id_Category FOREIGN KEY (id_Category) REFERENCES category(id_category);
 ALTER TABLE theme ADD CONSTRAINT FK_Theme_id_user FOREIGN KEY (id_user) REFERENCES user(id);
-ALTER TABLE configuration ADD CONSTRAINT FK_Configuration_id_user FOREIGN KEY (id_user) REFERENCES user(id);
-ALTER TABLE configuration ADD CONSTRAINT FK_Configuration_id_Color FOREIGN KEY (id_Color) REFERENCES color(id);
 
 INSERT INTO categoryType(type)
-VALUES  ('Article'),('Produits'),('Forfaits');
+VALUES  ('Article'),
+		    ('Produits'),
+		    ('Forfaits');

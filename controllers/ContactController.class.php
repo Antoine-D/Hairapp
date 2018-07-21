@@ -1,8 +1,5 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-
-
 class ContactController{
 
     public function getContact($options = null){
@@ -14,9 +11,12 @@ class ContactController{
         $v->assign("config", $form);
         //var_dump($options);
         //option vide = 3 donc si different de 3 pas vide
-        if (count($options) != 3){
-            $v->assign("success", $options);
-        } 
+        if( $options != null ){
+            if (count($options) != 3){
+                $v->assign("success", $options['success']);
+            }
+        }
+
 
     }
 
@@ -29,32 +29,26 @@ class ContactController{
         $message->setLastname(htmlentities($_POST['nom']));
         $message->setEmail(htmlentities($_POST['email']));
         $message->setObjet(htmlentities( $_POST['objet'] ));
-        $message->setMessage(htmlentities( $_POST['message'] ));
-        
-        
+        $message->setMessage( $_POST['message'] );
+        $users = new User();
+        $users = $users->getAllBy(["status" => 3], ["id, email, status"], 2);
+        $i=0;
+        $params['success'] = "Votre message a bien été envoyé";
+        foreach ($users as $user):
+            $to[$i] = $user->getEmail();
+            $i++;
+        endforeach;
 
-   require("vendor/autoload.php");
-
-                $mail = new PHPMailer();
-
-                $mail->IsSMTP(); // enable SMTP
-                $mail->SMTPDebug = 0;  // debugging: 1 = errors and messages, 2 = messages only
-                $mail->SMTPAuth = true;  // authentication enabled
-                $mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for GMail
-                $mail->Host = 'smtp.gmail.com';
-                $mail->Port = 465; //25 ou 465
-                $mail->Username = 'notifications.hairapp@gmail.com' ;
-                $mail->Password = 'zKXJKrMeGMH9';
-                $mail->From =$message->getEmail();
-                $mail->FromName = $message->getLastName();
-                $mail->Subject = $message->getObjet();
-                $mail->IsHTML(true);
-                $mail->Body = 'Adresse mail: '.$message->getEmail().'<br>  Message: '.$message->getMessage();
-                $mail->AddAddress( 'notifications.hairapp@gmail.com' );
+                $from =$message->getEmail() ;
+                $replyTo= [$message->getEmail()];
+                $fromName = $message->getLastName();
+                $object = $message->getObjet();
+                $body =  'Message: '.$message->getMessage();
+                $mail = new Mail($to, $from, $fromName, $object, $body, $replyTo, '', true);
                 if(!$mail->Send()) {
 
                 } else {
-                    $this->getContact("Votre message a bien été envoyé");
+                    $this->getContact( $params );
                 }
 }
 }

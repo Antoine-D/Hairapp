@@ -18,14 +18,17 @@ class BaseSql{
      */
 
     public function __construct(){
-        try{;
-            $this->db = new PDO(DBDRIVER.":host=".DBHOST.";dbname=".DBNAME , DBUSER, DBPWD);
-        }catch(Exception $e){
-            die("Erreur SQL :".$e->getMessage());
-        }
-        //$this->db = new Database();
 
-        $this->table = strtolower(get_called_class()) == "hairdresser" ? "user" : strtolower(get_called_class());
+        //if( INSTALLED == true ){
+            try{
+                $this->db = new PDO(DBDRIVER.":host=".DBHOST.";dbname=".DBNAME , DBUSER, DBPWD);
+            }catch(Exception $e){
+                die("Erreur SQL :".$e->getMessage());
+            }
+
+            $this->table = strtolower(get_called_class()) == "hairdresser" ? "user" : strtolower(get_called_class());
+        //}
+
     }
 
     public static function getInstance() {
@@ -44,11 +47,17 @@ class BaseSql{
         );
     }
 
+    public function createDatabase( $query ){
+
+        $sql = $this->db->prepare( $query );
+        $sql->execute();
+    }
+
     public function update( $statement, $params ){
 
         $query = $this->db->prepare( $statement );
 
-        $query->execute( $params );
+        $query->execute( $params);
     }
 
     public function generateToken( $email ){
@@ -70,12 +79,18 @@ class BaseSql{
         $tmp5 = array();
 
         foreach($params as $key => $value) {
-            $tmp1[] = ':'.$key;
-            $tmp2[] = $key.'=:'.$key;
-            $tmp4[] = $key.' <> :'.$key;
-            if(!in_array($key, $params_remove)) {
-                $tmp3[] = $key.'=:'.$key;
+
+            if( $key != 'max_to' ){
+                $tmp1[] = ':'.$key;
+                $tmp2[] = $key.'=:'.$key;
+                $tmp4[] = $key.' <> :'.$key;
+                $tmp5[] = $key.' IN :'.$key;
+                if(!in_array($key, $params_remove)) {
+                    $tmp3[] = $key.'=:'.$key;
+                }
+
             }
+
         }
 
         if( isset( $params['min'] ) && isset( $params['max'] )  ){
@@ -86,7 +101,7 @@ class BaseSql{
             $result['min_to'] = " <= '" . $params['min_to'] . "'";
         }
         if( isset( $params['max_to'] )   ){
-            $result['max_to'] = " >= '" . $params['max_to']. "'";
+            $result['max_to'] = " >= :max_to";
         }
 
         if( isset( $params['inner_table']) && isset( $params['inner_table']) && isset($params['inner_column']) ){
@@ -104,6 +119,9 @@ class BaseSql{
         $result['bind_onduplicate'] = implode(',', $tmp3);
         $result['bind_primary_key'] = implode(' AND ', $tmp3);
         $result['not_in'] = implode(' AND ', $tmp4);
+        $result['in'] = implode(' AND ', $tmp5);
+
+        //echo '<pre>'; print_r($result); echo '</pre>';
         return $result;
     }
 
@@ -178,10 +196,10 @@ class BaseSql{
 
 
     /**
-     * @param $table
      * @param $fields
      * @param $fields_primary_key
      * @param array $options
+     * @internal param $table
      */
     public function updateTable($fields, $fields_primary_key = null , $options=array()) {
         $res = null;
@@ -205,13 +223,11 @@ class BaseSql{
         if( $found == 0 ){
             $bind['fields'] = ltrim( $bind['fields'], ',' );
             $sql_upd = 'INSERT INTO '.$table.' ('.$bind['fields'].') VALUES ('.$bind['bind_insert'].')';
-
         }
         else{
             $sql_upd = 'UPDATE '.$this->table.' SET '.$bind['bind_update'].' WHERE '.$bind_pk['bind_primary_key'];
 
         }
-
         $this->update($sql_upd, $sql_params);
     }
 
@@ -227,11 +243,18 @@ class BaseSql{
      * @param $fields_primary_key
      * @return array|bool|mixed
      */
-    public function countTable($table, $fields_primary_key) {
+    public function countTable($table = null, $fields_primary_key = null) {
+        $table = $table == null ? $this->table : $table;
         $table = basename($table);
-        $bind_pk = $this->bindParams($fields_primary_key);
-        $sql_count = 'SELECT COUNT(*) FROM '.$table.' WHERE '.$bind_pk['bind_primary_key'];
-        $found = $this->fetchOne($sql_count, $fields_primary_key);
+        if(!empty($fields_primary_key)) {
+            $bind_pk = $this->bindParams($fields_primary_key);
+            $sql_count = 'SELECT COUNT(*) FROM ' . $table . ' WHERE ' . $bind_pk['bind_primary_key'];
+            $found = $this->fetchOne($sql_count, $fields_primary_key);
+        }
+        else{
+            $sql_count = 'SELECT COUNT(*) FROM ' . $table . ';';
+            $found = $this->fetchOne($sql_count);
+        }
         return $found;
     }
 
@@ -302,7 +325,8 @@ class BaseSql{
 
              if( isset( $inner['inner_table']) ){
                  $bind_inner = $this->bindParams($inner);
-                 $from = $this->table . $bind_inner['inner'];
+                 $firstTable = substr( $this->table, 0, 1);
+                 $from = $this->table.' '.$firstTable . $bind_inner['inner'];
              }
              else{
                  $from = $this->table;
@@ -323,21 +347,32 @@ class BaseSql{
                  $where_type = $columns[0] . $bind['min_to'];
              }
              elseif ( $tab == 7 ){
-                 $where_type = $columns[0] . $bind['max_to'];
+                 if( $bind['bind_primary_key'] != '' ){
+                     $where_type = $columns[0] . $bind['max_to'] . " AND " . $bind['bind_primary_key'] ;
+
+                 }else{
+                     $where_type = $columns[0] . $bind['max_to'];
+                 }
+
              }
+             elseif ($tab = 8){
+                 $field =  array_keys($sql_params)[0];
+                 $sql_params[$field] = implode(',',$sql_params[$field]);
+                 $where_type = $bind['in'];
+             }
+
             if ($options != null){
                 $sql = $this->db->prepare('SELECT ' .$select.
-                 ' FROM '.$this->table.' WHERE '
+                 ' FROM '.$from.' WHERE '
                  .$where_type.' '. $options);
+
+
              }else {
              $sql = $this->db->prepare('SELECT ' .$select.
                  ' FROM '.$from.' WHERE '
                  .$where_type);
-
             }
-
              $sql->execute($sql_params);
-
          }
          else{
              if( isset( $inner['inner_table']) ){
@@ -349,14 +384,15 @@ class BaseSql{
              }
              if ($options != null){
                 $sql = $this->db->prepare('SELECT ' .$select.
-                 ' FROM '.$this->table.' WHERE '
-                 .$where_type.' '. $options);
+                 ' FROM '.$this->table.' WHERE '.
+                 ' '. $options);
              }else {
                  $sql = $this->db->prepare('SELECT ' .$select.
                  ' FROM '.$this->table
              );
              }
-             $sql->execute();  
+
+             $sql->execute();
          }
 
             $result = $sql->fetchAll(PDO::FETCH_CLASS, ucfirst( $this->table ) );
@@ -371,6 +407,19 @@ class BaseSql{
     public function populate($where = []){
 
         $sql = $this->db->prepare( "SELECT * FROM user WHERE email = :email" );
+        //->fetchObject('User');
+        $sql->execute( $where );
+        $result = $sql->fetchObject('User');
+
+
+        //return objet
+        return $result;
+
+    }
+
+    public function populateconf($where = []){
+
+        $sql = $this->db->prepare( "SELECT * FROM configuration WHERE email = :email" );
         //->fetchObject('User');
         $sql->execute( $where );
         $result = $sql->fetchObject('User');

@@ -2,8 +2,8 @@
 class AppointmentController{
     public function getAppointment($data){
         $v = new Views( "appointment", "header" );
-        $category = new Category();
-        $categories = $category->getAllBy(['id_CategoryType' => '3', 'status' => '1'],null,3);
+        $category = new Category(3);
+        $categories = $category->getAllBy(['id_CategoryType' => $category->getIdCategoryType(), 'status_category' => '1'],null,3);
         $categories = $category->getCategoriesWithPackage($categories);
 
         $package =  new Package();
@@ -15,27 +15,33 @@ class AppointmentController{
         $v->assign("current", 'appointment');
         $v->assign("categories", $categories);
         $v->assign('packages',$packages);
+
+        foreach ($hairdressers as $hairdresser){
+            $picture = DIRNAME.(!is_null($hairdresser->getPicture())?$hairdresser->getPicture():'public/img/templateHairdresserPics.jpg');
+            $picture = $picture == '/'? $picture.'public/img/templateHairdresserPics.jpg':$picture;
+            $hairdresser->setPicture($picture);
+        }
+
         $v->assign('hairdressers',$hairdressers);
         isset($data)?$v->assign('data',$data):'';
     }
 
     public function saveAppointment(){
-        //Enregistrer tous les champs
-        /* Pr coiffeur = all :
-        *  Faire une fonction qui cherche un des coiffeur ayant la disponibilité sur cette heure
-        */
+        if (Security::isConnected()){
         $errors = ['errors' => Validator::checkAvailableAppointment()];
+
         if (!empty($errors['errors'])){
             return $this->getAppointment($errors);
         }
         else {
+            $package = new Package();
+            $duration = $package->getAllBy(['id' => $_POST['package']],['duration'],3)[0]->getDuration();
+            $package->setDuration($duration);
             $month = $_POST['mois'] < 10 ? '0' . $_POST['mois'] : $_POST['mois'];
             $day = $_POST['jour'] < 10 ? '0' . $_POST['jour'] : $_POST['jour'];
             $date = $_POST['annee'] . $month . $day;
-            //s'occuper de la gestion de coiffeur = all
             if($_POST['hairdresser'] == 'all'){
-                $package = new Package();
-                $duration = $package->getAllBy(['id' => $_POST['package']],['duration'],3)[0]->getDuration();
+
                 $hairdresser = new Hairdresser();
                 $hairdresser =$hairdresser->getHairdresserAvailableForSelectedHour($_POST['cbHeure'],$date,$duration);
             }
@@ -45,7 +51,7 @@ class AppointmentController{
 
             $appointment = new Appointment();
             $appointment->setDateAppointment($date);
-            $appointment->setHourAppointment($_POST['cbHeure']);
+            $appointment->setHourAppointment(isset($_POST['cbHeure'])?$_POST['cbHeure']:$_POST['selectHour']);
             $appointment->setIdPackage($_POST['package']);
             $appointment->setIdUser($_SESSION['id']);
             $appointment->setIdHairdresser($hairdresser);
@@ -55,11 +61,18 @@ class AppointmentController{
                 "hourAppointment" => $appointment->getHourAppointment(),
                 "id_user" => $appointment->getIdUser(),
                 "id_Hairdresser" => $appointment->getIdHairdresser(),
-                "id_Package" => $appointment->getIdPackage()
+                "id_Package" => $appointment->getIdPackage(),
+                "took" => date('Ymd')
             ]);
 
             $success = ['success' => 'Votre rendez-vous a bien été pris'];
+            $appointment->sendAddAppointmentMail([$_SESSION['email']]);
+
             return $this->getAppointment($success);
+            }
+        }
+        else{
+            header("Location: /login/getLogin");
         }
     }
 
@@ -85,7 +98,8 @@ class AppointmentController{
             $hairdressersId = $hairdresser->getAllBy(['status' => '2'],['id'],3);
             $availableHairdresser = $hairdresser->checkIfTheyAreFreeHairdresser($appointments,$hairdressersId);
             if($availableHairdresser){
-                echo(json_encode($appointment->getAllAvailableTimeRange($duration)));
+                $availableTimeRange = $appointment->getAllAvailableTimeRange();
+                echo(json_encode($availableTimeRange));
                 return true;
             }
 
@@ -94,19 +108,23 @@ class AppointmentController{
                 $timesRange = array_merge($timesRange,$hairdresser->getTimeRangeAvailable($appointments,$duration));
             }
             sort($timesRange);
+            if(empty($timesRange)){
+                echo(json_encode(['errors' => 'Aucun horaire disponible']));
+                return true;
+            }
             echo(json_encode(array_values(array_unique($timesRange))));
             return true;
         }
         else{
             $appointments = $appointment->getAllBy(['dateAppointment' => $date->format('Y-m-d'),'id_Hairdresser'=>$idHairDresser,'planned'=> 1],null,3);
             if(empty($appointments)){
-                echo(json_encode($appointment->getAllAvailableTimeRange($duration)));
+                echo(json_encode($appointment->getAllAvailableTimeRange()));
                 return true;
             }
 
             $timesRange = $hairdresser->getTimeRangeAvailable($appointments,$duration);
             if (empty($timesRange)){
-                echo(json_encode(['errors' => 'Aucune horaires disponibles']));
+                echo(json_encode(['errors' => 'Aucun horaire disponible']));
                 return true;
             }
             echo(json_encode($timesRange));

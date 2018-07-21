@@ -8,7 +8,7 @@
 
 class AccountController{
 
-    public function getAccount(){
+    public function getAccount($errors = null, $isFromForm = null){
 
         $user = new User();
         $form = $user->AccountForm();
@@ -30,7 +30,7 @@ class AccountController{
         $appointment = new Appointment();
 
         $where = [
-            "id_User" => $_SESSION['id'],
+            "id_user" => $_SESSION['id'],
             "max_to" => date("Y-m-d"),
             'planned'=> 1
         ];
@@ -43,7 +43,7 @@ class AccountController{
 
         $appointments = $appointment->getAllBy(
             $where,
-            ['dateAppointment', 'hourAppointment', 'id_User', 'id_Hairdresser', 'id_Package', 'u.firstname' , 'u.lastname'], 7, $inner);
+            ['dateAppointment', 'hourAppointment', 'id_user', 'id_Hairdresser', 'id_Package', 'u.firstname' , 'u.lastname'], 7, $inner);
 
         $v->assign("account", $infos);
 
@@ -69,6 +69,16 @@ class AccountController{
         $v->assign("config",$form);
         $v->assign("config_pwd", $form_pwd );
         $v->assign("current", 'account');
+
+        if( $errors != null ){
+            if (count($errors)!=3 && $isFromForm == 1 ){
+                $v->assign("errors",$errors);
+            }
+            elseif ( count($errors)!=3 && $isFromForm == 2 ){
+                $v->assign("errors_account",$errors);
+            }
+        }
+
     }
     
     public function getChangeToPwd(){
@@ -77,6 +87,55 @@ class AccountController{
         $v = new Views( "changetopwd", "header" );
         $v->assign( "current", "login" );
         $v->assign("config",$form);
+    }
+
+   public function savePwd( $params ){
+
+        $user = new User();
+        $form = $user->ChangePwdForm();
+
+        if(!empty($params["POST"])) {
+            //Verification des saisies
+
+            $errors = Validator::validate($form, $params["POST"]);
+            //var_dump( $errors ); die;
+            if( empty( $errors ) ){
+                
+                $account = $user->populate( ['email' => $_SESSION['email'] ] );
+
+                if( empty( $account) ){
+
+                    $errors[] = "L'utilisateur n'existe pas.";
+                }
+                else{
+                    if (password_verify( $_POST['pwd'], $account->getPwd() ) == false ){
+
+                    $errors[] = "Mot de passe incorrect"; 
+                }
+             }   
+             if  (empty( $errors)){
+
+                $user->setPwd($_POST['pwdnew']);
+
+                $params = array(
+                    "id" => $account->getId(),
+                    "pwd" => $user->getPwd(),
+                );
+
+                $user->updateTable( $params, ["id"=>$account->getId()]);
+
+                header("Location: ".DIRNAME."home/getHome");
+
+            } else{
+                
+             $this->getAccount($errors, 2);
+            }
+        }
+            else{
+             $this->getAccount($errors, 2);
+            }
+
+        }
     }
 
     public function Validate( $params ){
@@ -157,11 +216,14 @@ class AccountController{
             self::getAccount();
 
         }else{
-            $v = new Views( "account", "header" );
-            $v->assign( "current", "account" );
-            $v->assign( "account", $_POST );
-            $v->assign("config",$form);
-            $v->assign("errors",$errors);
+
+            self::getAccount( $errors, 1 );
+            //$v = new Views( "account", "header" );
+            //$v->assign( "current", "account" );
+            //$v->assign( "account", $_POST );
+            //$v->assign("config",$form);
+
+            //$v->assign("errors",$errors);
         }
 
 
