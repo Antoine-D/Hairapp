@@ -10,6 +10,8 @@ $appointments = $vars['appointments'];
 $hairdressers = $vars['hairdressers'];
 $opening = $vars['opening'];
 $closing = $vars['closing'];
+$duration = $vars['duration'];
+$availableHours = $vars['availableHours'];
 
 $hairdresser_class = [];
 
@@ -39,95 +41,57 @@ $haidresserCounter = 1;
         <div style="overflow-x: auto">
             <table class="col-l-2 col-s-2 center" id="planning">
                 <th>Horaires</th>
-                <?php for( $i = $opening; $i <= $closing; $i = $i + 0.5 ): ?>
 
-                    <?php if( preg_match( '#[0-9]{1,2}[.]#', $i) ): ?>
+                <?php foreach ( $availableHours as $hour ): ?>
                         <tr>
                             <td>
-                                <?php $i < 10? $k = "0".$i: $k = $i;?>
-                                <?php $time = str_replace( '.5', ':30', $k);echo $time;?>
+                                <?php echo $hour; ?>
                             </td>
                         </tr>
-                    <?php else: ?>
-                        <tr>
-                            <td>
-                                <?php $i < 10?$k = "0". $i: $k = $i; ?>
-                                <?php echo $k.':00'; ?>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
 
 
-                <?php endfor; ?>
+                <?php endforeach; ?>
             </table>
 
             <?php foreach ( $week as $day => $date): ?>
-                <table class="col-l-2 col-s-2 center" id="planning">
+                <table class="col-l-2 col-s-2 center" id="planning" style="margin-bottom: 80px;">
                     <th> <?php echo $day; ?></th>
 
-                    <?php
-                        //TODO: changer les valeurs de i par les valeurs ouverture/fermeture choisies à l'install
-                    ?>
-                    <?php for( $i = $opening; $i <= $closing; $i += 0.5 ): ?>
-                        <?php $exist = 0; ?>
 
-                        <?php if( preg_match( '#[0-9]{1,2}[.]#', $i) ): ?>
+                    <?php foreach ( $availableHours as $hour ): ?>
+                        <?php $exist = 0 ; ?>
+                        <?php foreach ( $appointments as $appointment  ): ?>
 
-                            <?php $i < 10? $k = $i: $k = $i;?>
-                            <?php $time = str_replace( '.5', ':30', $k);?>
+                            <?php if ( $appointment->getHourAppointment() == $hour. ":00" && $appointment->getDateAppointment() == $date ): ?>
+                                <tr>
+                                    <td
 
-                                <?php foreach ( $appointments as $appointment  ): ?>
+                                        <?php foreach ( $hairdresser_class as $hairdresser => $value ): ?>
 
-                                    <?php if ( $appointment->getHourAppointment() == $time .":00" && $appointment->getDateAppointment() == $date ): ?>
-                                        <tr>
-                                            <td
+                                        <?php if ( $appointment->getIdHairdresser()  == $hairdresser ): ?>
+                                            class="<?php echo $value; ?>">
+                                        <?php endif; ?>
+                                        <?php endforeach; ?>
+                                        <span> <?php echo $appointment->getFirstname(); ?></span>
+                                    </td>
+                                </tr>
+                                <?php $exist = 1;?>
+                            <?php endif; ?>
 
-                                            <?php foreach ( $hairdresser_class as $hairdresser => $value ): ?>
-
-                                                <?php if ( $appointment->getIdHairdresser()  == $hairdresser ): ?>
-                                                    class="<?php echo $value; ?>">
-                                                <?php endif; ?>
-                                            <?php endforeach; ?>
-                                                <span> <?php echo $appointment->getFirstname(); ?></span>
-                                            </td>
-                                        </tr>
-                                    <?php $exist = 1; ?>
-                                    <?php endif; ?>
-
-                                <?php endforeach; ?>
-
-                        <?php else: ?>
-
-                            <?php $i < 10?$k = $i: $k = $i; ?>
-
-                                <?php foreach ( $appointments as $appointment  ): ?>
-
-                                    <?php if ( $appointment->getHourAppointment() == $k .":00:00" && $appointment->getDateAppointment() == $date ): ?>
-
-                                        <tr>
-                                            <td
-                                                <?php foreach ( $hairdresser_class as $hairdresser => $value ): ?>
-                                                    <?php if ( $appointment->getIdHairdresser()  == $hairdresser ): ?>
-                                                        class="<?php echo $value; ?>">
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                                <span> <?php echo $appointment->getFirstname(); ?></span>
-                                            </td>
-                                        </tr>
-                                        <?php $exist = 1; ?>
-                                <?php endif; ?>
-
-                                <?php endforeach; ?>
-
-                        <?php endif; ?>
-
-                        <?php if( $exist == 0 ): ?>
+                        <?php endforeach; ?>
+                        <?php if ( $exist == 0 ): ?>
                             <tr>
                                 <td>-</td>
                             </tr>
                         <?php endif; ?>
 
-                    <?php endfor; ?>
+
+                    <?php endforeach; ?>
+
+                    <?php
+                        //TODO: changer les valeurs de i par les valeurs ouverture/fermeture choisies à l'install
+                    ?>
+
 
                 </table>
             <?php endforeach; ?>
@@ -138,3 +102,4 @@ $haidresserCounter = 1;
         &nbsp;
     </article>
 </div>
+

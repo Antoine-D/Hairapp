@@ -59,21 +59,12 @@ include "templates/sidebar.view.php";
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
-                    
-                    
-                    <nav aria-label="navigation">
-                        <tr class="page">
-                            <td class="previous"><a href="#" title="Précédent">Précédent</a></td>
-                            <td class="page center" colspan="6">1/104</td>
-                            <td class="next-admin"><a href="#" title="Suivant">Suivant</a></td>
-                        </tr>
-                        
-                    </nav>
+
                 </table>
                 
             </div>
         </article>
-         <a href=" <?php echo DIRNAME;?>admin/addArticle"  class="buttonUserAdd">Ajouter un article</a>
+         <a style="margin-bottom: 80px;" href=" <?php echo DIRNAME;?>admin/addArticle"  class="buttonUserAdd">Ajouter un article</a>
     </div>
 
   </main>

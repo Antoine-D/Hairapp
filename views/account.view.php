@@ -88,39 +88,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-l-6 center">
-
-                <div class="col-l-6 center">
-                    <?php $i = 0; ?>
-                    <?php foreach ( $appointments as $appointment ):?>
-                        <ul>
-                        <?php if( $i < ( count( $appointments) / 2 ) ):?>
-
-                                <li><?php echo "Le " . $appointment->getDateAppointment() . " à " . $appointment->getHourAppointment() . " avec " . $appointment->getFirstname() ;?>
-                                </li>
-
-                         <?php $i++; endif; ?>
-                        </ul>
-                    <?php endforeach; ?>
-                </div>
-                <div class="col-l-6 center">
-
-                    <?php $i = 0 ; ?>
-                    <?php foreach ( $appointments as $appointment ):?>
-                        <ul>
-                            <?php if( $i < ( count( $appointments) / 2 ) ):?>
-
-                            <?php $i++; else: ?>
-                                <li>
-                                    <?php echo "Le " . $appointment->getDateAppointment() . " à " . $appointment->getHourAppointment() . " avec " . $appointment->getFirstname() ;?>
-                                </li>
-                            <?php $i++; endif; ?>
-                        </ul>
-                    <?php endforeach; ?>
-
-                </div>
-
-
+            <div class="col-l-10 center">
+                <table class="userManagerTab col-l-12 center">
+                    <?php if(empty($appointments)):?>
+                        <td colspan="2"><h3> Aucun rendez-vous à venir</h3></td>
+                    <?php else: ?>
+                        <?php foreach ( $appointments as $appointment ):?>
+                            <tr>
+                                <td> <?php echo "Le " . $appointment->getDateAppointment() . " à " . $appointment->getHourAppointment() . " avec " . $appointment->getFirstname() ;?></td>
+                                <td><a href="<?php echo DIRNAME . "account/cancelAppointment/". $appointment->getIdAppointment(); ?>" class='buttonUserDelete'>Annuler</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </table>
             </div>
         </div>
     </div>

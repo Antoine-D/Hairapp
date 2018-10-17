@@ -6,7 +6,7 @@
             <div class="row">
 
                 <div class="col-s-12 col-m-6 col-l-6 center">
-                    <div class="form_register">
+                    <div class="form_register" style="margin-bottom: 80px;">
                         <div class="row">
                             <h1 id="title-rdv" class="title col-l-12">Modifier l'article</h1>
                         </div>

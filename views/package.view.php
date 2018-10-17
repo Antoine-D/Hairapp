@@ -1,5 +1,5 @@
 ﻿<body id="body-rdv">
-	<main id="main-forfait" class="col-s-11 col-l-8">
+	<main id="main-forfait" class="col-s-11 col-l-8" style="margin-bottom: 80px;">
         <div class="row">
             <h1 id="title-rdv" class="title col-l-4">Notre Carte</h1>
         </div>

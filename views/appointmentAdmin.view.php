@@ -16,7 +16,7 @@ include "templates/sidebar.view.php";
             <a id='add' href="<?php echo DIRNAME . "admin/updateAppointment"; ?>" class='buttonUserAdd' style="margin-bottom: 0px;">Ajouter un rendez-vous</a>
         </div>
         <input id="search" class="input col-l-2" placeholder="Recherchez...">
-        <a id='getPastAppointment' href="<?php echo DIRNAME . "admin/getAppointmentAdmin/".$filter == 'past'? 'futur':'past'?>" class='buttonUserModify buttonSecondary row'>Afficher les rendez-vous <?php echo $filter == 'past'? 'à venir':'passé(s)'?></a>
+        <a id='getPastAppointment' href="<?php echo DIRNAME ?>admin/getAppointmentAdmin/<?php echo $filter == 'past'? 'futur':'past'?>" class='buttonUserModify buttonSecondary row'>Afficher les rendez-vous <?php echo $filter == 'past'? 'à venir':'passé(s)'?></a>
         <div class="col-s-12 col-m-8 col-l-12 form_register_admin">
             <div class="col-l-4">
                 <h2 class="center title">Gestion des rendez-vous</h2>
@@ -49,8 +49,10 @@ include "templates/sidebar.view.php";
                         <td><?php echo Security::setHtmlEntitiesForData($appointment->getIdUser()); ?></td>
                         <td><?php echo Security::setHtmlEntitiesForData($appointment->getIdHairdresser()); ?></td>
                         <td><?php echo Security::setHtmlEntitiesForData($appointment->getIdPackage()); ?></td>
-                        <td><a id='modify' href="<?php echo DIRNAME . "admin/updateAppointment/".$appointment->getId() ?>" class='buttonUserModify'>Modifier</a></td>
-                        <td><a id='delete' href="<?php echo DIRNAME . "admin/deleteAppointment/".$appointment->getId() ?>" class='buttonUserDelete'>Supprimer</a></td>
+                        <?php if($filter != 'past'): ?>
+                            <td><a id='modify' href="/admin/updateAppointment/<?php echo $appointment->getId() ?>" class='buttonUserModify'>Modifier</a></td>
+                            <td><a id='delete' href="/admin/deleteAppointment/<?php echo $appointment->getId() ?>" class='buttonUserDelete'>Supprimer</a></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

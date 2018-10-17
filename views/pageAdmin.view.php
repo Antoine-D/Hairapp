@@ -75,13 +75,6 @@ include "templates/sidebar.view.php";
                     ?>
                 </tbody>
 
-                    <nav aria-label="navigation">
-                        <tr class="page">
-                            <td class="previous"><a href="#" title="Précédent">Précédent</a></td>
-                            <td class="page center" colspan="4">1/104</td>
-                            <td class="next-admin"><a href="#" title="Suivant">Suivant</a></td>
-                        </tr>
-                    </nav>
                 </table>
             </div>
         </article>

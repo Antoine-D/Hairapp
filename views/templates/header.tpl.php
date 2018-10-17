@@ -1,21 +1,3 @@
-<?php
-//$urldemandee=$_SERVER['REQUEST_URI']; // on récupère l'url de la page courante
-//// on met cette url en forme pour en faire un nom de fichier valide
-//$urldemandee=str_replace("/",'-',$urldemandee);
-//if($urldemandee=="-") $urldemandee="-index.html";
-//$fichierSitemaps="sitemaps".$urldemandee;
-//$fichierSitemaps=str_replace('sitemaps-','',$fichierSitemaps);
-//// on teste si le fichier existe déjà
-//if(!file_exists(DIRNAME."/sitemaps/".$fichierSitemaps)!==false) {
-//    $fd = fopen("sitemaps/".$fichierSitemaps,"w"); //on ouvre le fichier
-//    if ($fd) {
-//        if($_SERVER['REQUEST_URI']=="/") $filtrePage="/index.html";else $filtrePage=$_SERVER['REQUEST_URI']; //on evite de dupliquer domaine.com et domaine.com/index.html
-//        $sitemapsContent="<url>\n\t<loc>http://www.grandprix4.org".$filtrePage."</loc>\n\t<lastmod>".date('Y-m-d')."T".date('H:m:s+00:00')."</lastmod>\n</url>\n"; //on formate les infos pour le XML
-//        fwrite($fd,$sitemapsContent); //on ecrit le fichier
-//        fclose($fd); //on ferme le fichier
-//    }
-//}
-?>
 <!DOCTYPE html>
 <html lang='fr' >
 
@@ -25,21 +7,20 @@
     <meta name="keywords" content="hairapp, coiffeur, coiffure,salon,prise,rendez-vous,cms,forfaits,cheveux,coupe,homme,femme,enfant,barbe,prix">
     <meta name="robots" content="index, nofollow">
     <meta name="language" content="french">
-    <link rel='stylesheet' type='text/css' href="<?php echo DIRNAME;?>public/css/style.css">
+    <link rel="stylesheet" type="text/css" href="<?php echo DIRNAME. "public/css/style.css";?> ">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" href="<?php echo DIRNAME;?>public/img/logo/favicon.ico" />
+
     <?php if( !empty( $configuration->getName() ) ): ?>
         <title><?php echo $configuration->getName(); ?></title>
     <?php else: ?>
         <title>Hair'App</title>
     <?php endif; ?>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-
 </head>
 
 <script type="text/javascript" src='https://code.jquery.com/jquery-3.2.1.slim.min.js'></script>
 <script type="text/javascript" src="<?php echo DIRNAME;?>public/js/index.js"></script>
-
 
 <body>
 
@@ -62,7 +43,6 @@
               </div>
 
           <?php endif; ?>
-
           <div id="burger" class="toggleAnimated" onclick="toggleAnimated(this)">
               <div class="bar1"></div>
               <div class="bar2"></div>
@@ -72,9 +52,15 @@
         <nav class='nav'>
 
           <ul id="sidebar_ul">
+              <?php if ( Security::isConnected() && (Security::isAdmin() ) ): ?>
+                  <li <?php if ($current == 'admin'): echo ' class="li-navbar active" '; else: echo ' class="li-navbar"'; endif; ?> >
+                      <a href="<?php echo DIRNAME;?>admin/getAdmin">Administration</a>
+                  </li>
+              <?php endif; ?>
               <li <?php if ( $current == 'home'): echo ' class="li-navbar active" '; else: echo ' class="li-navbar"'; endif; ?> >
                   <a href=<?php echo DIRNAME ?>home/getHome>Accueil</a>
               </li>
+
               <?php foreach ( $navbar as $nav ): ?>
 
                   <?php if( $nav->getActive() == 1 ): ?>
@@ -94,19 +80,16 @@
                 <a href='<?php echo DIRNAME;?>appointment/getAppointment'>Rendez-vous</a>
             </li>
             <li <?php if ( $current == 'packages'): echo ' class="li-navbar active" '; else: echo ' class="li-navbar"'; endif?>>
-                <a href='<?php echo DIRNAME;?>package/getPackage'>Forfait</a>
+                <a href='<?php echo DIRNAME;?>package/getPackage'>Carte</a>
             </li>
-            <li <?php if ( $current == 'products'): echo ' class="li-navbar active" '; else: echo ' class="li-navbar"'; endif?>>
-                <a href='#'>Vitrine</a>
-            </li>
-
+              <li <?php if ( $current == 'category') {echo ' class="li-navbar active" ';} else echo ' class="li-navbar"';?>>
+                  <a href='<?php echo DIRNAME;?>category/getCategory'>Article</a>
+              </li>
             <li <?php if ( $current == 'contact') {echo ' class="li-navbar active" ';} else echo ' class="li-navbar"';?>>
                 <a href='<?php echo DIRNAME;?>contact/getContact'>Contact</a>
 
             </li>
-            <li <?php if ( $current == 'category') {echo ' class="li-navbar active" ';} else echo ' class="li-navbar"';?>>
-                <a href='<?php echo DIRNAME;?>category/getCategory'>Article</a>
-            </li>
+
               <?php if( Security::isConnected() ): ?>
                     <li <?php if ( $current == 'account'): echo ' class="li-navbar active" '; else: echo ' class="li-navbar"'; endif;?>>
                         <a href='<?php echo DIRNAME;?>account/getAccount'>Mon Compte</a>

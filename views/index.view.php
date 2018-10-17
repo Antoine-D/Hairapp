@@ -3,7 +3,7 @@
     <div class="row slideshow-container">
 
         <div class="mySlides fade">
-            <img class="contain-img" alt="Hairapp" src="<?php echo DIRNAME . $pic_slideshow['nFirst']; ?>" style="width:100%">
+            <img class="contain-img" alt="Hairapp" src="<?php echo DIRNAME . $pic_slideshow['nFirst']; ?>" style="width:100%; object-fit: cover;">
             <diV class="text-image">
                 <h1 class="text-image-h1">Prendre rendez-vous</h1>
                 <h2 class="text-image-h2">Prenez directement rendez-vous avec votre salon en ligne</h2>
@@ -56,10 +56,10 @@
              <?php while ($i < 3): ?>
                  <div class="col-s-12 col-m-12 col-l-12">
                     <div class="article-accueil">
-                        <img class="img-art" src="../public/img/quote.svg"/>
+                        <img alt="quote" class="img-art" src="<?php echo DIRNAME . "public/img/quote.svg";?>"/>
                         <span>
                             <h3 class="titre-article"><?php echo $articles[$i]->getName(); ?></h3>
-                            <p class="content-art"><?php echo $articles[$i]->getMiniDescription(); ?></p>
+                            <p class="content-art"><?php echo $articles[$i]->getMiniDescription(); ?> <strong>[...]</strong></p>
                         </span>
 
                         <a class='button-title' href="<?php echo DIRNAME.'article/getArticle/'. $articles[$i]->getId().''; ?>" >Voir plus...</a>
@@ -73,18 +73,18 @@
                 <?php foreach( $articles as $article) : ?>
                      <div class="col-s-12 col-m-12 col-l-12">
                         <div class="article-accueil">
-                            <img class="img-art" src="<?php echo DIRNAME . "public/img/quote.svg";?>" />
+                            <img class="img-art" alt="quote" src="<?php echo DIRNAME . "public/img/quote.svg";?>" />
                             <span>
                                 <h3 class="titre-article"><?php echo $article->getName(); ?></h3>
-                                <p class="content-art"><?php echo $article->getMiniDescription(); ?></p>
+                                <p class="content-art"><?php echo $article->getMiniDescription(); ?> <strong>[...]</strong></p>
                             </span>
                             <a class='button-title' href="<?php echo DIRNAME.'article/getArticle/'. $article->getId().''; ?>" >Voir plus...</a>
                         </div>
                      </div>
                 <?php endforeach ?>
             <?php endif ?>
-            
-        </div>
+                <a class="btnForfait col-l-12" style="padding: 10px" href="<?php echo DIRNAME; ?>category/getCategory">Voir tous nos articles</a>
+            </div>
            
     </section>
 
@@ -93,22 +93,22 @@
          
                 
                 <span>
-                    <h3 class="carte">Notre carte</h3>
-                    <p class="content-carte">Decouvrez nos forfaits Homme Femme sur notre carte</p>
+                    <p class="content-carte">Decouvrez nos différents forfaits disponibles</p>
                     <img alt="barber" class="contain-img" src="<?php echo DIRNAME . "public/img/barber3.jpg";?>" style="width:100%; padding:10px">
                 </span>
            
         <a href="<?php echo DIRNAME ."package/getPackage";?>" class="btnForfait col-l-10">Cliquez ici</a>
     </section>
 
-    
-
-
-    </section>
     <section id="" class="col-s-12 col-m-12 col-l-4">
         <h2 class="title-carte center" style="margin-right: 30px;">Flux RSS</h2>
         <div class="col-s-3 col-m-6 col-l-12 side-accueil" style="overflow:scroll;">
-            <a class="twitter-timeline" href="https://twitter.com/TwitterDev?ref_src=twsrc%5Etfw">Flux RSS</a>
+            <?php if( !empty( $configuration->getTwitterLink() ) ): ?>
+                <a class="twitter-timeline" href="<?php echo $configuration->getTwitterLink() ;?>">Tweets by HairappC</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            <?php else: ?>
+                <a class="twitter-timeline" href="https://twitter.com/TwitterDev?ref_src=twsrc%5Etfw">Flux RSS</a>
+            <?php endif; ?>
+
             <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
     </section>

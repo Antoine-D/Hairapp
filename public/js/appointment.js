@@ -80,6 +80,7 @@ function getAvailableHours(day,month,year,idPackage,idHairdresser){
                 package :idPackage,
                 hairdresser : idHairdresser},
         success: function(response){
+console.log( response );
             showAllHour(JSON.parse(response))
         }
         });

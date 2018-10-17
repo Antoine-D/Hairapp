@@ -74,7 +74,7 @@ include "templates/sidebar.view.php";
                 <p>Fond d'écran actuel : </p>
                 <form method="post" action="<?php echo DIRNAME;?>admin/pictureAccChange" enctype="multipart/form-data">
                     <div>
-                        <img src="../public/img/salon coiffure.jpeg" alt="Image de fond" width="300" height="200">
+                        <img src="<?php echo DIRNAME . "public/img/".$background;?>" alt="Image de fond" width="300" height="200">
                     </div><br>
                     <div>
                         <label for="homePic2">Fond d'écran :</label>

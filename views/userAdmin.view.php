@@ -42,20 +42,11 @@
                 <?php endforeach; ?>
                 </tbody>
 
-
-                <nav aria-label="navigation">
-                    <tr class="page">
-                        <td class="previous"><a href="#" title="Précédent">Précédent</a></td>
-                        <td class="page center" colspan="5">1/104</td>
-                        <td class="next-admin"><a href="#" title="Suivant">Suivant</a></td>
-                    </tr>
-
-                </nav>
             </table>
 
         </div>
     </article>
-    <a href=" <?php echo DIRNAME;?>admin/addUser"  class="buttonUserAdd">Ajouter un utilisateur</a>
+    <a href=" <?php echo DIRNAME;?>admin/addUser" style="margin-bottom: 80px;"  class="buttonUserAdd">Ajouter un utilisateur</a>
 </div>
 
 </main>

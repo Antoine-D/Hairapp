@@ -1,6 +1,6 @@
 <body id="body-art">
 
-  <main id="main-rdv" class="col-s-11 col-l-8 ">
+  <main id="main-rdv" class="col-s-11 col-l-8 " style="margin-bottom: 80px;">
         <div class="row">
             <h1 id="title-art" class="title col-s-12 col-m-12 col-l-12">Choisir une categorie d'article</h1>
       </div>
@@ -38,7 +38,7 @@
                           <span>
                               <h3 class='titre-article'><?php echo $article->getName(); ?></h3>
                               <p class='content-art'>
-                                <img class='' src='<?php echo DIRNAME . "public/img/quote.svg";?>'/><?php echo $article->getMiniDescription(); ?> </p>
+                                <img class='' src='<?php echo DIRNAME . "public/img/quote.svg";?>'/><?php echo $article->getMiniDescription(); ?> <strong>[...]</strong> </p>
                           </span>
                           <a class='button-title' href="<?php echo DIRNAME; ?>article/getArticle/<?php echo $article->getId(); ?>">Voir plus...</a>
 

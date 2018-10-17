@@ -3,7 +3,7 @@
         <div class="row">
             <div>
                 <h4 style='margin: 0;'>
-                  Publié le <?php echo substr($article->getDateParution(), 8).' '.$month[substr($article->getDateParution(), 5, 2)].' '.substr($article->getDateParution(), 0,4); ?>  
+                  Publié le <?php echo substr($article->getDateParution(), 8,2).' '.$month[substr($article->getDateParution(), 5, 2)].' '.substr($article->getDateParution(), 0,4); ?>  
                 </h4>
             </div>
             <div style="width: 100%;">

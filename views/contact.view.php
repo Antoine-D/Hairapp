@@ -48,11 +48,33 @@
 
 
                                 <div class="col-l-7">
-                                    <h2>Adresse du salon : </h2>
+                                    <h3>Adresse du salon : </h3>
                                 </div>
                                 <div class="col-l-5">
 
-                                    <p><?php echo $configuration->getPostalAddress(); ?></p>
+                                    <p style="margin: 0; padding: 0"><?php echo $configuration->getPostalAddress(); ?></p>
+
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="row">
+                            <div class="col-l-7">
+                                <h3>Horaires du salon : </h3>
+                            </div>
+                            <div class="col-l-5">
+                                Du mardi au samedi de <?php echo OPENING_HOUR . " - " . CLOSING_HOUR; ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <?php if( !empty( $configuration->getTel() ) ): ?>
+
+
+                                <div class="col-l-7">
+                                    <h3>Contacter le salon : </h3>
+                                </div>
+                                <div class="col-l-5">
+
+                                    <p style="margin: 0; padding: 0"><?php echo $configuration->getTel(); ?></p>
 
                                 </div>
                             <?php endif; ?>

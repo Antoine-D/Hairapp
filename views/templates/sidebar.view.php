@@ -9,7 +9,7 @@
 ?>
 
 
-<div class='sidenav'>
+<div class="sidenav" >
     <header class='header'>
         <div class='logo'>
             <a href='<?php echo DIRNAME;?>admin/getAdmin'>
@@ -60,7 +60,7 @@
         </div>
 
         <li <?php if ( $current_sidebar == 'comments') {echo ' class="sidebar_buttons active" ';} else echo ' class="sidebar_buttons"';?>>
-            <a href="<?php echo DIRNAME;?>admin/getCommentAdmin">Comments</a>
+            <a href="<?php echo DIRNAME;?>admin/getCommentAdmin">Commentaires</a>
         </li>
 
         <li <?php if ( $current_sidebar == 'appointment') {echo ' class="sidebar_buttons active" ';} else echo ' class="sidebar_buttons"';?>>

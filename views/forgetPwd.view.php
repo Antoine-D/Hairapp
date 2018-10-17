@@ -33,6 +33,7 @@
                                                 </div>
 
                                             </li>
+                                            <meta http-equiv="refresh" content="5;<?php echo DIRNAME ?>home/getHome">
                                     <?php endif; ?>
                                 </ul>
                         </div>

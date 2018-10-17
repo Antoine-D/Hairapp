@@ -1,5 +1,64 @@
 $.ajax({
-    type: 'POST',
+    type: 'GET',
+    url: 'admin/ajaxGetDashboardData',
+    datatype: "json",
+    success: function(response){
+
+        data = JSON.parse(response)
+        var rolesLabel = Object.keys(data['roles'])
+        var rolesValue = Object.values(data['roles'])
+        var labelLine = getLastMonth(Object.keys(data['labelLine']).length > 6 ? 6 : Object.keys(data['labelLine']).length)
+        var signinValue = typeof data['signin'] == 'undefined'?0:Object.values(data['signin'])
+        var appointmentValue = Object.values(data['appointment'])
+
+        new Chart(document.getElementById("pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: rolesLabel,
+                datasets: [{
+                    label: "Utilisateurs (unités)",
+                    backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+                    data: rolesValue
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                }
+            }
+        });
+
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: labelLine,
+                datasets: [{
+                    data: signinValue,
+                    label: "Utilisateurs",
+                    borderColor: "#3e95cd",
+                    fill: false
+                },
+                    {
+                        data: appointmentValue,
+                        label: "Rendez-vous",
+                        borderColor: "red",
+                        fill: false
+                    },
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Statistiques de prises de rendez-vous et d\'inscription par mois'
+                }
+            }
+        });
+    }
+
+});
+
+$.ajax({
+    type: 'GET',
     url: 'ajaxGetDashboardData',
     datatype: "json",
     success: function(response){
